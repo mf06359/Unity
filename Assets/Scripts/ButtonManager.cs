@@ -187,8 +187,8 @@ public class ButtonManager : MonoBehaviour
     {
         int buttonNumber = 1; // for skip button
         ResetButtonPlace();
-        if (player.chi[Library.idWithoutRed[tileId]]) buttonNumber++;
         if (player.pon[Library.idWithoutRed[tileId]]) buttonNumber++;
+        if (player.chi[Library.idWithoutRed[tileId]]) buttonNumber++;
         if (player.kan[Library.idWithoutRed[tileId]]) buttonNumber++;
         if (player.machiTile[Library.idWithoutRed[tileId]]) buttonNumber++;
         if (buttonNumber == 1)

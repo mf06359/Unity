@@ -93,7 +93,7 @@ public class Library : MonoBehaviour
         if (player.tempHan >= 8) return 4000 * C;
         if (player.tempHan >= 6) return 3000 * C;
         if (player.tempHan >= 5 || (player.tempHan >= 4 && player.tempFu >= 40) || (player.tempHan >= 3 && player.tempFu >= 70)) return 2000 * C;
-        return (int) (C * ((double)player.tempFu * Math.Pow(2, player.tempHan + 2)) + 50)  / 100 * 100;
+        return (int) (C * 1d * player.tempFu * Math.Pow(2, player.tempHan + 2) + 99)  / 100 * 100;
     }
 
     public static int PopCount(int x)
@@ -453,7 +453,7 @@ public class Library : MonoBehaviour
         {
             if (player.id == 0)
             {
-                if (player.count[30 + player.id] > 0)
+                if (player.count[30 + player.id] >= 3)
                 {
                     player.tempYakuNames.Add("自風牌 東");
                     player.tempHan += 1;
@@ -468,7 +468,7 @@ public class Library : MonoBehaviour
         {
             if (PlayerManager.instance.placeWind == 0)
             {
-                if (player.count[30] > 0)
+                if (player.count[30] >= 3)
                 {
                     player.tempYakuNames.Add("場風牌 東");
                     player.tempHan += 1;
@@ -483,7 +483,7 @@ public class Library : MonoBehaviour
         {
             if (player.id == 1)
             {
-                if (player.count[30 + player.id] > 0)
+                if (player.count[30 + player.id] >= 3)
                 {
                     player.tempYakuNames.Add("自風牌 南");
                     player.tempHan += 1;
@@ -498,7 +498,7 @@ public class Library : MonoBehaviour
         {
             if (PlayerManager.instance.placeWind == 1)
             {
-                if (player.count[31] > 0)
+                if (player.count[31] >= 3)
                 {
                     player.tempYakuNames.Add("場風牌 南");
                     player.tempHan += 1;
@@ -513,7 +513,7 @@ public class Library : MonoBehaviour
         {
             if (player.id == 2)
             {
-                if (player.count[30 + player.id] > 0)
+                if (player.count[30 + player.id] >= 3)
                 {
                     player.tempYakuNames.Add("自風牌 西");
                     player.tempHan += 1;
@@ -528,7 +528,7 @@ public class Library : MonoBehaviour
         {
             if (player.id == 3)
             {
-                if (player.count[30 + player.id] > 0)
+                if (player.count[30 + player.id] >= 3)
                 {
                     player.tempYakuNames.Add("自風牌 北");
                     player.tempHan += 1;
@@ -691,22 +691,23 @@ public class Library : MonoBehaviour
             {
                 if (player.count[i] > 0)
                 {
-                    kanjiExist |= true;
+                    kanjiExist = true;
+                }
+                if (player.head[0] == i)
+                {
+                    kanjiExist = true;
                 }
             }
             bool tanyaoExist = false;
             foreach (int i in tanyao)
             {
+                if (player.tripletMeld[i] + player.furoTripletMeld[i] > 0)
+                {
+                    tanyaoExist = true;
+                }
                 if (player.head[0] == i)
                 {
-                    tanyaoExist |= true;
-                }
-            }
-            foreach (int i in tanyao)
-            {
-                if (player.count[i] > 0)
-                {
-                    tanyaoExist |= true;
+                    tanyaoExist = true;
                 }
             }
             for (int i = 0; i < 3; i++)
@@ -716,7 +717,7 @@ public class Library : MonoBehaviour
                     int t = i * 10 + j;
                     if (player.seqMeld[t] + player.furoSeqMeld[t] > 0)
                     {
-                        tanyaoExist |= true;
+                        tanyaoExist = true;
                     }
                 }
             }
@@ -754,6 +755,7 @@ public class Library : MonoBehaviour
             for (int i = 0; i < 37; i++)
             {
                 count += player.tripletMeld[i];
+                count += player.ankantsu[i];
             }
             if (count >= 3)
             {
@@ -1146,17 +1148,18 @@ public class Library : MonoBehaviour
             {
                 if (PlayerManager.instance.activeTile == pairTileNumber)
                 {
-                    player.tempYakuNames.Add("kokushi musou 13 men");
+                    player.tempYakuNames.Add("国士無双13面待ち");
                     player.tempHan = 26;
                 }
                 else
                 {
-                    player.tempYakuNames.Add("kokushi musou");
+                    player.tempYakuNames.Add("国士無双");
                     player.tempHan = 13;
                 }
             }
         }
-        // SU ANKO && CHUREN OF POTO // checked
+        // SU ANKO  // VERIFIED
+        // CHUREN OF POTO // checked
         {
             if (player.furoCount == 0)
             {
@@ -1187,7 +1190,7 @@ public class Library : MonoBehaviour
                 // JUNSEI CHUREN OF POTO
                 for (int j = 0; j < 3; j++)
                 {
-                    bool isChuren = false;
+                    bool isChuren = true;
                     int doubleCountId = 0;
                     for (int i = 0; i < 10; i++)
                     {
@@ -1260,22 +1263,21 @@ public class Library : MonoBehaviour
         // ALL GREEN
         // checked
         {
-            int allGreen = 0;
+            int notIncludedAllGreen = 0;
             for (int i = 0; i < 37; i++)
             {
-                if (includedAllGreen[i])
+                if (!includedAllGreen[i])
                 {
-                    allGreen += player.count[i];
+                    notIncludedAllGreen += player.count[i];
                 }
             }
-            if (allGreen == 14)
+            if (notIncludedAllGreen == 0)
             {
                 player.tempYakuNames.Add("緑一色");
                 player.tempHan += 13;
             }
         }
-        // ALL Kanji
-        // checked
+        // ALL Kanji // VERIFIED
         {
             bool allKanji = true;
             for (int i = 0; i < 29; i++)
@@ -1291,7 +1293,7 @@ public class Library : MonoBehaviour
                 player.tempHan += 13;
             }
         }
-        // CHIN RO TO
+        // CHIN RO TO // VERIFIED
         {
             bool isChinRoTo = true;
             for (int i = 1; i <= 8; i++)

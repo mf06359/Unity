@@ -148,7 +148,7 @@ public class PlayerManager : MonoBehaviour
                 kanList.Add(new int[2] { Library.idWithoutRed[player.hand[i]], 0 } );
             }
         }
-        if (0 < kanList.Count && kanList.Count < 2)
+        if (0 < kanList.Count && kanList.Count < 2) // ANKAN
         {
             for (int i = player.hand.Count - 1; i >= 0; i--)
             {
@@ -179,7 +179,7 @@ public class PlayerManager : MonoBehaviour
                 kanList.Add(new int[2] { Library.idWithoutRed[i], player.kakan[i] });
             }
         }
-        if (kanList.Count < 2)
+        if (kanList.Count < 2) // KAKAN
         {
             Debug.Assert(kanList.Count == 1);
             for (int i = player.hand.Count - 1; i >= 0; i--)
@@ -198,6 +198,8 @@ public class PlayerManager : MonoBehaviour
             }
             panelManager.SaveKakanTile(player, kanList[0][0]);
             ReloadMenzenDisplayWithoutTsumo();
+            player.furoTripletMeld[kanList[0][0]]--;
+            player.kantsu[kanList[0][0]]++;
             Debug.Assert(kanList.Count == 1);
             player.furoNow = true;
             Tsumo();
