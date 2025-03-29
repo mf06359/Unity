@@ -3,7 +3,7 @@
   "WorkspaceRootPath": "C:\\Users\\might\\Mahjong\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|C:\\Users\\might\\Mahjong\\assets\\scripts\\library.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|c:\\users\\might\\mahjong\\assets\\scripts\\library.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\library.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -15,15 +15,15 @@
       "RelativeMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\buttonmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|c:\\users\\might\\mahjong\\assets\\scripts\\togglebuttoncolor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|C:\\Users\\might\\Mahjong\\assets\\scripts\\togglebuttoncolor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\togglebuttoncolor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|c:\\users\\might\\mahjong\\assets\\scripts\\panelmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|C:\\Users\\might\\Mahjong\\assets\\scripts\\panelmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\panelmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|c:\\users\\might\\mahjong\\assets\\scripts\\playermanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|C:\\Users\\might\\Mahjong\\assets\\scripts\\playermanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\playermanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -35,11 +35,11 @@
       "RelativeMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\soundplayer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|c:\\users\\might\\mahjong\\assets\\scripts\\statemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|C:\\Users\\might\\Mahjong\\assets\\scripts\\statemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\statemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|c:\\users\\might\\mahjong\\assets\\scripts\\gamemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|C:\\Users\\might\\Mahjong\\assets\\scripts\\gamemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\gamemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -78,8 +78,7 @@
               "RelativeToolTip": "Assets\\Scripts\\StateManager.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-29T07:07:07.246Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-29T07:07:07.246Z"
             },
             {
               "$type": "Document",
@@ -91,8 +90,7 @@
               "RelativeToolTip": "Assets\\Scripts\\GameManager.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-29T07:07:05.731Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-29T07:07:05.731Z"
             },
             {
               "$type": "Document",
@@ -104,8 +102,7 @@
               "RelativeToolTip": "Assets\\Scripts\\PanelManager.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-29T07:06:55.85Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-29T07:06:55.85Z"
             },
             {
               "$type": "Document",
@@ -117,8 +114,7 @@
               "RelativeToolTip": "Assets\\Scripts\\ToggleButtonColor.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-29T07:06:53.838Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-29T07:06:53.838Z"
             },
             {
               "$type": "Document",
@@ -128,7 +124,7 @@
               "RelativeDocumentMoniker": "Assets\\Scripts\\Library.cs",
               "ToolTip": "C:\\Users\\might\\Mahjong\\Assets\\Scripts\\Library.cs",
               "RelativeToolTip": "Assets\\Scripts\\Library.cs",
-              "ViewState": "AgIAAHoAAAAAAAAAAAA5wJwFAAA1AAAAAAAAAA==",
+              "ViewState": "AgIAAHsDAAAAAAAAAAAQwKwDAAA3AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-03-29T04:13:12.587Z",
               "EditorCaption": ""
@@ -143,8 +139,7 @@
               "RelativeToolTip": "Assets\\Scripts\\Panel.cs",
               "ViewState": "AgIAABkAAAAAAAAAAAAkwEAAAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-29T04:52:26.982Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-29T04:52:26.982Z"
             },
             {
               "$type": "Document",
@@ -156,8 +151,7 @@
               "RelativeToolTip": "Assets\\Scripts\\ButtonManager.cs",
               "ViewState": "AgIAAHMAAAAAAAAAAAAcwL0AAABFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-29T04:52:26.639Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-29T04:52:26.639Z"
             },
             {
               "$type": "Document",
@@ -169,8 +163,7 @@
               "RelativeToolTip": "Assets\\Scripts\\Board.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-29T04:52:26.238Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-29T04:52:26.238Z"
             },
             {
               "$type": "Document",
@@ -182,8 +175,7 @@
               "RelativeToolTip": "Assets\\Scripts\\SoundPlayer.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-29T04:52:25.849Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-29T04:52:25.849Z"
             },
             {
               "$type": "Document",
@@ -195,8 +187,7 @@
               "RelativeToolTip": "Assets\\Scripts\\PlayerManager.cs",
               "ViewState": "AgIAADkAAAAAAAAAAAAYwNAAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-29T04:52:25.385Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-29T04:52:25.385Z"
             },
             {
               "$type": "Document",
@@ -208,8 +199,7 @@
               "RelativeToolTip": "Assets\\Scripts\\DisplayPointPanel.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-29T04:52:23.961Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-29T04:52:23.961Z"
             },
             {
               "$type": "Document",
@@ -221,8 +211,7 @@
               "RelativeToolTip": "Assets\\Scripts\\Player.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-29T04:52:23.558Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-29T04:52:23.558Z"
             },
             {
               "$type": "Document",
@@ -234,8 +223,7 @@
               "RelativeToolTip": "Assets\\Scripts\\Wall.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-29T04:52:23.16Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-29T04:52:23.16Z"
             },
             {
               "$type": "Document",
@@ -247,8 +235,7 @@
               "RelativeToolTip": "Assets\\Scripts\\Tile.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-29T04:52:21.724Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-29T04:52:21.724Z"
             }
           ]
         }

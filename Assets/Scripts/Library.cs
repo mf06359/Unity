@@ -371,7 +371,7 @@ public class Library : MonoBehaviour
         }
         // Ippatsu // Tsumo // CHECKED
         {
-            if (player.turnCount - player.riichiTurn == 1)
+            if (player.turnCount - player.riichiTurn <= 1)
             {
                 player.tempYakuNames.Add("一発");
                 player.tempHan += 1;
@@ -938,7 +938,7 @@ public class Library : MonoBehaviour
         // Tsumo // VERIFIED
         {
             // Tsumo 
-            if (player.turnCount - player.riichiTurn == 1)
+            if (player.turnCount - player.riichiTurn <= 1)
             {
                 player.tempYakuNames.Add("一発");
                 Debug.Log("ippatsu");
