@@ -19,7 +19,6 @@ public class PlayerManager : MonoBehaviour
     private List<Vector3> positions;
     public Vector3 firstRiverTail, riverTail;
     private const int turnLimit = 55;
-    private int turns = 0;
     public int riverCount = 0, activeTile = -1, activeTilePlayer = 1, tileCount = 0;
     public bool isParent = true, pleaseSort = true;
     public int riichiedJustNow = 0;
@@ -227,6 +226,7 @@ public class PlayerManager : MonoBehaviour
         panelManager.SaveAnkanTiles(player, ankanTile);
         ReloadMenzenDisplayWithoutTsumo();
         player.kanJustNow = true;
+        panelManager.FlipNewDora(wall);
         Tsumo();
     }
     public void Kakan(Player player, int kakanTile)
@@ -383,7 +383,7 @@ public class PlayerManager : MonoBehaviour
     }
     public void TurnStart()
     {
-        turns++;
+        player.turnCount++;
         player.myTurn = true;
         Tsumo();
     }
@@ -395,7 +395,6 @@ public class PlayerManager : MonoBehaviour
         if (Library.idWithoutRed[tsumo] != tsumo)
         {
             player.redDoraCount++;
-            Debug.Log($"turn {turns} : TSUMO RED DORA NOW :  red dora count => {player.redDoraCount}");
         }
         player.hand.Add(tsumo);
         player.tsumo = tsumo;
@@ -447,7 +446,7 @@ public class PlayerManager : MonoBehaviour
             player.penchanKanchanTanki[i] = player.penchanKanchanTankiIf[Library.idWithoutRed[Library.ToInt(tile.name)], i];
         }
         ReloadMenzenDisplayWithoutTsumo();
-        if (turns > turnLimit) Restart();
+        if (player.turnCount > turnLimit) Restart();
         TurnEnd();
         OtherPlayerTsumo();
     }
@@ -520,7 +519,7 @@ public class PlayerManager : MonoBehaviour
     }
     public void Riichi() 
     { 
-        if (turns == 1)
+        if (player.turnCount == 1)
         {
             player.doubleriichiNow = true;
         }
