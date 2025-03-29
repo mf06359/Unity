@@ -93,7 +93,7 @@ public class Library : MonoBehaviour
         if (player.tempHan >= 8) return 4000 * C;
         if (player.tempHan >= 6) return 3000 * C;
         if (player.tempHan >= 5 || (player.tempHan >= 4 && player.tempFu >= 40) || (player.tempHan >= 3 && player.tempFu >= 70)) return 2000 * C;
-        return (C * (int)(player.tempFu * Math.Pow(2, player.tempHan + 2)) + 50)  / 100 * 100;
+        return (int) (C * ((double)player.tempFu * Math.Pow(2, player.tempHan + 2)) + 50)  / 100 * 100;
     }
 
     public static int PopCount(int x)
@@ -153,7 +153,7 @@ public class Library : MonoBehaviour
     {
         if (PopCount(((1 << player.hand.Count) - 1) & ~usedTiles) == 2)
         {
-            Debug.Log("HolaWithHead Called");
+            //Debug.Log("HolaWithHead Called");
             for (int i = 0; i < player.hand.Count; i++)
             {
                 if (((usedTiles >> i) & 1) == 0)
@@ -162,7 +162,7 @@ public class Library : MonoBehaviour
                 }
             }
             if (player.head[0] == player.head[1]) HolaNormal(player, RonToWho);
-            Debug.Log($"{player.head[0]} : {player.head[1]}");
+            //Debug.Log($"{player.head[0]} : {player.head[1]}");
             player.head.Clear();
         }
         player.tsumo = PlayerManager.instance.activeTile;
@@ -371,7 +371,7 @@ public class Library : MonoBehaviour
         }
         // Ippatsu // Tsumo // CHECKED
         {
-            if (PlayerManager.instance.riichiedJustNow >= 1)
+            if (player.turnCount - player.riichiTurn == 1)
             {
                 player.tempYakuNames.Add("一発");
                 player.tempHan += 1;
@@ -1115,9 +1115,10 @@ public class Library : MonoBehaviour
         }
         // thirteen orphans // VERIFIED
         {
+            bool isKokushi = true;
             if (player.hand.Count != 14)
             {
-                return;
+                isKokushi = false;
             }
             int[] count = new int[37];
             for (int i = 0; i < 37; i++)
@@ -1129,27 +1130,30 @@ public class Library : MonoBehaviour
                 count[idWithoutRed[player.hand[i]]]++;
             }
             int pairTileNumber = -1;
+            int kindCount = 0;
             foreach (int pai in kokushi)
             {
-                if (count[pai] == 1) continue;
+                if (count[pai] >= 1)
+                {
+                    kindCount++;
+                }
                 if (count[pai] == 2)
                 {
                     pairTileNumber = idWithoutRed[pai];
                 }
+            }
+            if (kindCount == 13 && isKokushi)
+            {
+                if (PlayerManager.instance.activeTile == pairTileNumber)
+                {
+                    player.tempYakuNames.Add("kokushi musou 13 men");
+                    player.tempHan = 26;
+                }
                 else
                 {
-                    return;
+                    player.tempYakuNames.Add("kokushi musou");
+                    player.tempHan = 13;
                 }
-            }
-            if (PlayerManager.instance.activeTile == pairTileNumber)
-            {
-                player.tempYakuNames.Add("kokushi musou 13 men");
-                player.tempHan = 26;
-            }
-            else
-            {
-                player.tempYakuNames.Add("kokushi musou");
-                player.tempHan = 13;
             }
         }
         // SU ANKO && CHUREN OF POTO // checked
@@ -1265,10 +1269,10 @@ public class Library : MonoBehaviour
                 }
             }
             if (allGreen == 14)
-        {
-            player.tempYakuNames.Add("緑一色");
-            player.tempHan += 13;
-        }
+            {
+                player.tempYakuNames.Add("緑一色");
+                player.tempHan += 13;
+            }
         }
         // ALL Kanji
         // checked
@@ -1341,6 +1345,13 @@ public class Library : MonoBehaviour
                 player.tempHan += 13;
             }
         }
+        string temp = "";
+        foreach (string s in player.tempYakuNames)
+        {
+            temp += s;
+            temp += ", ";
+        }
+        Debug.Log("Yakuman Names" + temp);
         ReloadPayPoints(player, RonToWho);
     }
     public static void ReloadPayPoints (Player player, int RonToWho = -1)
@@ -1400,8 +1411,15 @@ public class Library : MonoBehaviour
                 }
             }
         }
-        if (player.tempMaxPoints[player.id] >= player.maxPoints[player.id])
+        if (player.tempMaxPoints[player.id] > player.maxPoints[player.id])
         {
+            string temp = "";
+            foreach (string s in player.tempYakuNames)
+            {
+                temp += s;
+                temp += ", ";
+            }
+            Debug.Log(temp);
             player.maxPoints = player.tempMaxPoints;
             player.fu = player.tempFu;
             player.han = player.tempHan;

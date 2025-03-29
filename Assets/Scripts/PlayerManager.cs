@@ -166,6 +166,7 @@ public class PlayerManager : MonoBehaviour
             }
             Debug.Assert(kanList.Count == 1);
             panelManager.SaveAnkanTiles(player, kanList[0][0]);
+            player.ankantsu[Library.idWithoutRed[kanList[0][0]]]++;
             ReloadMenzenDisplayWithoutTsumo();
             player.furoNow = true;
             Tsumo();
@@ -431,8 +432,8 @@ public class PlayerManager : MonoBehaviour
     }
     public void DiscardTile(Tile tile)
     {
-        Debug.Log($"DiscardTile => tileAt.Count : {tileAt.Count}");
-        Debug.Log($"DiscardTile => player.hand.Count : {player.hand.Count}");
+        //Debug.Log($"DiscardTile => tileAt.Count : {tileAt.Count}");
+        //Debug.Log($"DiscardTile => player.hand.Count : {player.hand.Count}");
         if (Library.idWithoutRed[Library.ToInt(tile.name)] != Library.ToInt(tile.name))
         {
             player.redDoraCount--;
@@ -444,6 +445,7 @@ public class PlayerManager : MonoBehaviour
         {
             player.machiTile[i] = player.machiTiles[Library.idWithoutRed[Library.ToInt(tile.name)], i];
             player.penchanKanchanTanki[i] = player.penchanKanchanTankiIf[Library.idWithoutRed[Library.ToInt(tile.name)], i];
+            player.ryanmen[i] = player.ryanmenIf[Library.idWithoutRed[Library.ToInt(tile.name)], i];
         }
         ReloadMenzenDisplayWithoutTsumo();
         if (player.turnCount > turnLimit) Restart();
