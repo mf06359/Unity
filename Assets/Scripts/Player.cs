@@ -25,6 +25,7 @@ public class Player : MonoBehaviour
     public int id = 0;
     public int tsumo = 0;
     // state
+    public int riichiTurn = 0;
     public bool[] machiTile;
     public int[] kakan;
     public bool[] pon, chi; 

@@ -23,6 +23,7 @@ public class PlayerManager : MonoBehaviour
     public int riverCount = 0, activeTile = -1, activeTilePlayer = 1, tileCount = 0;
     public bool isParent = true, pleaseSort = true;
     public int riichiedJustNow = 0;
+    public int riichiedTurn = -1;
     public int placeWind = 0;
     public bool activeTileKanned = false;
     public int parentId = 0;
@@ -525,6 +526,7 @@ public class PlayerManager : MonoBehaviour
         }
         player.riichiNow = true;
         riichiedJustNow = 2;
+        player.riichiTurn = player.turnCount;
     }
     public Vector3 GetPosition(int index) {
         if (index < 0 || positions.Count <= index) return positions[^1];

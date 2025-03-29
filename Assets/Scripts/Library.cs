@@ -119,8 +119,8 @@ public class Library : MonoBehaviour
         Debug.Log("CalculatePoints Called");
         CountTiles(player);
         HolaYakuman(player, RonToWho);
-        HolaSevenPairs(player, RonToWho);
-        //HolaWithHead(player, 0, RonToWho);
+        //HolaSevenPairs(player, RonToWho);
+        HolaWithHead(player, 0, RonToWho);
     }
     private static void CountTiles(Player player)
     {
@@ -158,7 +158,7 @@ public class Library : MonoBehaviour
             Debug.Log("HolaWithHead Called");
             for (int i = 0; i < player.hand.Count; i++)
             {
-                if (((usedTiles >> i) & 1) == 1)
+                if (((usedTiles >> i) & 1) == 0)
                 {
                     player.head.Add(player.hand[i]);
                 }
@@ -925,7 +925,7 @@ public class Library : MonoBehaviour
         // Tsumo // VERIFIED
         {
             // Tsumo 
-            if (PlayerManager.instance.riichiedJustNow >= 1)
+            if (player.turnCount - player.riichiTurn == 1)
             {
                 player.tempYakuNames.Add("一発");
                 Debug.Log("ippatsu");
@@ -958,7 +958,7 @@ public class Library : MonoBehaviour
             }
         }
         // Hon itsu // So VERIFIED
-        // Chin itsu 
+        // Chin itsu // Man VERIFIED
         {
             int kanjiExist = 0;
             for (int i = 30; i < 37; i++)
@@ -1019,7 +1019,7 @@ public class Library : MonoBehaviour
                 player.tempHan += 2;
             }
         }
-        // ChanKan
+        // ChanKan 
         {
             if (PlayerManager.instance.activeTileKanned)
             {
@@ -1049,7 +1049,7 @@ public class Library : MonoBehaviour
                 Debug.Log($"dora : {doraCount}");
             }
         }
-        // Ura Dora 
+        // Ura Dora // VERIFIED
         {
             if (player.riichiNow)
             {
@@ -1510,7 +1510,7 @@ public class Library : MonoBehaviour
 
     public static void ShantenCount(Player player, int exceptTileId)
     {
-        //NormalShantenCount(player, exceptTileId);
+        NormalShantenCount(player, exceptTileId);
         SevenPairsShantenCount(player, exceptTileId);
         ThirteenOrphansShantenCount(player, exceptTileId);
     }
