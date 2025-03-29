@@ -1196,16 +1196,16 @@ public class Library : MonoBehaviour
                     {
                         if (i == 5) continue;
                         int baseline = (i == 0 || i == 9 ? 3 : 1);
-                        if (baseline < player.count[i])
+                        if (baseline < player.count[i + j * 10])
                         {
                             doubleCountId = i;
                         }
-                        else if (baseline > player.count[i])
+                        else if (baseline > player.count[i + j * 10])
                         {
                             isChuren = false;
                         }
                     }
-                    if (isChuren)
+                    if (isChuren && player.hand.Count == 14)
                     {
                         if (doubleCountId == player.hola)
                         {
