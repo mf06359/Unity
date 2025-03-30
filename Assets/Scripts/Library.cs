@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Library : MonoBehaviour
@@ -115,6 +113,7 @@ public class Library : MonoBehaviour
     public static void CalculatePoints(Player player, int RonToWho = -1)
     {
         Debug.Log("CalculatePoints Called");
+        player.hand.Sort();
         CountTiles(player);
         HolaYakuman(player, RonToWho);
         HolaSevenPairs(player, RonToWho);
@@ -165,7 +164,7 @@ public class Library : MonoBehaviour
             //Debug.Log($"{player.head[0]} : {player.head[1]}");
             player.head.Clear();
         }
-        player.tsumo = PlayerManager.instance.activeTile;
+        player.latestTile = GameManager.instance.activeTile;
         for (int i = 0; i + 2 < player.hand.Count; i++)
         {
             if (((usedTiles >> i) & 1) == 1)
@@ -187,9 +186,9 @@ public class Library : MonoBehaviour
                     if (ThreeIdToShantenCount(player, i, j, k) > 0) continue;
                     if (RonToWho != -1)
                     {
-                        if (player.hand[i] == player.tsumo)
+                        if (player.hand[i] == player.latestTile)
                         {
-                            player.tsumo = -1;
+                            player.latestTile = -1;
                             if (player.hand[i] == player.hand[j])
                             {
                                 player.furoTripletMeld[player.hand[i]]++;
@@ -202,11 +201,11 @@ public class Library : MonoBehaviour
                                 HolaWithHead(player, usedTiles | (1 << i) | (1 << j) | (1 << k), RonToWho);
                                 player.furoSeqMeld[player.hand[k]]--;
                             }
-                            player.tsumo = player.hand[i];
+                            player.latestTile = player.hand[i];
                         }
-                        if (player.hand[j] == player.tsumo)
+                        if (player.hand[j] == player.latestTile)
                         {
-                            player.tsumo = -1;
+                            player.latestTile = -1;
                             if (player.hand[i] == player.hand[j])
                             {
                                 player.furoTripletMeld[player.hand[i]]++;
@@ -219,11 +218,11 @@ public class Library : MonoBehaviour
                                 HolaWithHead(player, usedTiles | (1 << i) | (1 << j) | (1 << k), RonToWho);
                                 player.furoSeqMeld[player.hand[k]]--;
                             }
-                            player.tsumo = player.hand[j];
+                            player.latestTile = player.hand[j];
                         }
-                        if (player.hand[k] == player.tsumo)
+                        if (player.hand[k] == player.latestTile)
                         {
-                            player.tsumo = -1;
+                            player.latestTile = -1;
                             if (player.hand[i] == player.hand[j])
                             {
                                 player.furoTripletMeld[player.hand[i]]++;
@@ -236,7 +235,7 @@ public class Library : MonoBehaviour
                                 HolaWithHead(player, usedTiles | (1 << i) | (1 << j) | (1 << k), RonToWho);
                                 player.furoSeqMeld[player.hand[k]]--;
                             }
-                            player.tsumo = player.hand[k];
+                            player.latestTile = player.hand[k];
                         }
                         if (player.hand[i] == player.hand[j])
                         {
@@ -272,6 +271,8 @@ public class Library : MonoBehaviour
     }
     private static void HolaNormal(Player player, int RonToWho = -1)
     {
+        if (player.latestTile != -1) return;
+        Debug.Log("HolaNormal Called");
         player.tempFu = 20;
         player.tempHan = 0;
         player.tempYakuNames = new();
@@ -320,7 +321,7 @@ public class Library : MonoBehaviour
         }
             // head
         {
-            if (player.head[0] == 30 + (player.id - PlayerManager.instance.parentId + 4) % 4)
+            if (player.head[0] == 30 + (player.id - GameManager.instance.parentId + 4) % 4)
             {
                 player.tempFu += 2;
             }
@@ -328,14 +329,14 @@ public class Library : MonoBehaviour
             {
                 player.tempFu += 2;
             }
-            if (player.head[0] == 30 + PlayerManager.instance.placeWind)
+            if (player.head[0] == 30 + GameManager.instance.placeWind)
             {
                 player.tempFu += 2;
             }
         }
         // penchan // kanchan // tanki
         {
-            if (player.penchanKanchanTanki[idWithoutRed[PlayerManager.instance.activeTile]])
+            if (player.penchanKanchanTanki[idWithoutRed[GameManager.instance.activeTile]])
             {
                 player.tempFu += 2;
             }
@@ -363,7 +364,7 @@ public class Library : MonoBehaviour
                 player.tempYakuNames.Add("ダブル立直");
                 player.tempHan += 2;
             }
-            if (player.riichiNow)
+            if (player.riichiTurn != -1)
             {
                 player.tempYakuNames.Add("立直");
                 player.tempHan += 1;
@@ -466,17 +467,17 @@ public class Library : MonoBehaviour
         }
         // Double Ton
         {
-            if (PlayerManager.instance.placeWind == 0)
+            if (GameManager.instance.placeWind == 0)
             {
                 if (player.count[30] >= 3)
                 {
                     player.tempYakuNames.Add("場風牌 東");
                     player.tempHan += 1;
                 }
-            }
-            if (player.head[0] == 30)
-            {
-                headIsKanji = true;
+                if (player.head[0] == 30)
+                {
+                    headIsKanji = true;
+                }
             }
         }
         // Nan
@@ -496,17 +497,17 @@ public class Library : MonoBehaviour
         }
         // Double Nan
         {
-            if (PlayerManager.instance.placeWind == 1)
+            if (GameManager.instance.placeWind == 1)
             {
                 if (player.count[31] >= 3)
                 {
                     player.tempYakuNames.Add("場風牌 南");
                     player.tempHan += 1;
                 }
-            }
-            if (player.head[0] == 31)
-            {
-                headIsKanji = true;
+                if (player.head[0] == 31)
+                {
+                    headIsKanji = true;
+                }
             }
         }
         // Sha
@@ -593,9 +594,9 @@ public class Library : MonoBehaviour
         }
         // Haitei // Houtei // CHECKED
         {
-            if (PlayerManager.instance.wall.usedTileCount == 136 - 14)
+            if (GameManager.instance.Player(player.id).wall.usedTileCount == 136 - 14)
             {
-                if (PlayerManager.instance.activeTilePlayer == player.id)
+                if (GameManager.instance.activePlayerId == player.id)
                 {
                     player.tempYakuNames.Add("海底撈月");
                     player.tempHan += 1;
@@ -645,7 +646,7 @@ public class Library : MonoBehaviour
             for (int i = 0; i < 3; i++)
             {
                 if (player.seqMeld[i * 10 + 2] + player.furoSeqMeld[i * 10 + 2] > 0 && 
-                    player.seqMeld[i * 10 + 5] + player.furoSeqMeld[i * 10 + 5] > 0 && 
+                    player.seqMeld[i * 10 + 6] + player.furoSeqMeld[i * 10 + 6] > 0 && 
                     player.seqMeld[i * 10 + 9] + player.furoSeqMeld[i * 10 + 9] > 0 )
                 {
                     player.tempYakuNames.Add("一気通貫");
@@ -684,7 +685,7 @@ public class Library : MonoBehaviour
                 }
             }
         }
-        // CHANTA // JUNG CHANG
+        // CHANTA // JUNG CHANG // HON RO TO
         {
             bool kanjiExist = false;
             for (int i = 30; i < 37; i++)
@@ -721,7 +722,20 @@ public class Library : MonoBehaviour
                     }
                 }
             }
-            if (!tanyaoExist)
+            bool isHonroto = true;
+            foreach (int i in tanyao)
+            {
+                if (player.count[i] > 0)
+                {
+                    isHonroto = false;
+                }
+            }
+            if (isHonroto)
+            {
+                player.tempYakuNames.Add("混老頭");
+                player.tempHan += 2;
+            }
+            else if (!tanyaoExist)
             {
                 if (kanjiExist)
                 {
@@ -781,22 +795,6 @@ public class Library : MonoBehaviour
                 player.tempHan += 2;
             }
         }
-        // HON RO TO // CHECKED
-        {
-            bool isHonroto = true;
-            foreach (int i in tanyao)
-            {
-                if (player.count[i] > 0)
-                {
-                    isHonroto = false;
-                }
-            }
-            if (isHonroto)
-            {
-                player.tempYakuNames.Add("混老頭");
-                player.tempHan += 2;
-            }
-        }
         // Pinfu
         {
             int meldCount = 0;
@@ -806,8 +804,9 @@ public class Library : MonoBehaviour
                 meldCount += player.ankantsu[i];
                 meldCount += player.furoTripletMeld[i];
                 meldCount += player.tripletMeld[i];
+                meldCount += player.furoSeqMeld[i];
             }          
-            if (meldCount == 0 && player.ryanmen[idWithoutRed[PlayerManager.instance.activeTile]] && !headIsKanji)
+            if (meldCount == 0 && player.ryanmen[idWithoutRed[GameManager.instance.activeTile]] && !headIsKanji)
             {
                 player.tempYakuNames.Add("平和");
                 player.tempHan += 1;
@@ -824,7 +823,7 @@ public class Library : MonoBehaviour
         }
         // ChanKan
         {
-            if (PlayerManager.instance.activeTileKanned)
+            if (GameManager.instance.Player(player.id).activeTileKanned)
             {
                 player.tempYakuNames.Add("槍槓");
                 player.tempHan += 1;
@@ -850,28 +849,28 @@ public class Library : MonoBehaviour
         // Dora 
         {
             int doraCount = 0;
-            foreach (var dora in PlayerManager.instance.dora)
+            foreach (var dora in GameManager.instance.Player(player.id).dora)
             {
                 doraCount += player.count[dora];
             } 
             if (doraCount > 0)
             {
-                player.tempYakuNames.Add("ドラ");
+                player.tempYakuNames.Add($"ドラ {doraCount}");
                 player.tempHan += doraCount;
             }
         }
         // Ura Dora
         {
-            if (player.riichiNow)
+            if (player.riichiTurn != -1)
             {
                 int uraDoraCount = 0;
-                foreach (var dora in PlayerManager.instance.uraDora)
+                foreach (var dora in GameManager.instance.Player(player.id).uraDora)
                 {
                     uraDoraCount += player.count[dora];
                 }
                 if (uraDoraCount > 0)
                 {
-                    player.tempYakuNames.Add("裏ドラ");
+                    player.tempYakuNames.Add($"裏ドラ {uraDoraCount}");
                     player.tempHan += uraDoraCount;
                 }
             }
@@ -880,13 +879,17 @@ public class Library : MonoBehaviour
         {
             if (player.redDoraCount > 0)
             {
-                player.tempYakuNames.Add("赤ドラ");
+                player.tempYakuNames.Add($"赤ドラ {player.redDoraCount}");
                 player.tempHan += player.redDoraCount;
             }
         }
         if (isPinfu)
         {
             player.tempFu = 20;
+        }
+        else if (player.tempFu == 20)
+        {
+            player.tempFu = 30;
         }
         ReloadPayPoints(player, RonToWho);
     }
@@ -927,7 +930,7 @@ public class Library : MonoBehaviour
                 Debug.Log("double riichi");
                 player.tempHan += 2;
             }
-            if (player.riichiNow)
+            if (player.riichiTurn != -1)
             {
                 player.tempYakuNames.Add("立直");
                 Debug.Log("riichi");
@@ -956,9 +959,9 @@ public class Library : MonoBehaviour
         }
         // Haitei // Houtei
         {
-            if (PlayerManager.instance.wall.usedTileCount == 136 - 14)
+            if (GameManager.instance.Player(player.id).wall.usedTileCount == 136 - 14)
             {
-                if (PlayerManager.instance.activeTilePlayer == player.id)
+                if (GameManager.instance.activePlayerId == player.id)
                 {
                     player.tempYakuNames.Add("海底撈月");
                     player.tempHan += 1;
@@ -1034,7 +1037,7 @@ public class Library : MonoBehaviour
         }
         // ChanKan 
         {
-            if (PlayerManager.instance.activeTileKanned)
+            if (GameManager.instance.Player(player.id).activeTileKanned)
             {
                 player.tempYakuNames.Add("槍槓");
                 player.tempHan += 1;
@@ -1047,7 +1050,7 @@ public class Library : MonoBehaviour
         // Dora // VERIFIED
         {
             int doraCount = 0;
-            foreach (var dora in PlayerManager.instance.dora)
+            foreach (var dora in GameManager.instance.Player(player.id).dora)
             {
                 if (player.count[dora] > 0)
                 {
@@ -1064,10 +1067,10 @@ public class Library : MonoBehaviour
         }
         // Ura Dora // VERIFIED
         {
-            if (player.riichiNow)
+            if (player.riichiTurn != -1)
             {
                 int uraDoraCount = 0;
-                foreach (var dora in PlayerManager.instance.uraDora)
+                foreach (var dora in GameManager.instance.Player(player.id).uraDora)
                 {
                     if (player.count[dora] > 0)
                     {
@@ -1103,7 +1106,7 @@ public class Library : MonoBehaviour
         {
             if (player.turnCount == 1 && RonToWho == -1)
             {
-                if (PlayerManager.instance.parentId == player.id)
+                if (GameManager.instance.parentId == player.id)
                 {
                     player.tempYakuNames.Add("天和");
                     player.tempHan += 13;
@@ -1146,7 +1149,7 @@ public class Library : MonoBehaviour
             }
             if (kindCount == 13 && isKokushi)
             {
-                if (PlayerManager.instance.activeTile == pairTileNumber)
+                if (GameManager.instance.activeTile == pairTileNumber)
                 {
                     player.tempYakuNames.Add("国士無双13面待ち");
                     player.tempHan = 26;
@@ -1173,7 +1176,7 @@ public class Library : MonoBehaviour
                         kindCount++;
                     }
                 }
-                if (kindCount == 4)
+                if (kindCount == 4 && RonToWho == -1)
                 {
                     if (player.count[player.hola] == 2)
                     {
@@ -1365,7 +1368,7 @@ public class Library : MonoBehaviour
             // TSUMO
             if (RonToWho == -1)
             {
-                if (PlayerManager.instance.parentId == player.id)
+                if (GameManager.instance.parentId == player.id)
                 {
                     if (i == player.id)
                     {
@@ -1384,7 +1387,7 @@ public class Library : MonoBehaviour
                     }
                     else
                     {
-                        if (i == PlayerManager.instance.parentId)
+                        if (i == GameManager.instance.parentId)
                         {
                             player.tempMaxPoints[i] = -BasePoints(player, 2);
                         }
@@ -1400,7 +1403,7 @@ public class Library : MonoBehaviour
             {
                 if (RonToWho == i)
                 {
-                    if (PlayerManager.instance.parentId == player.id)
+                    if (GameManager.instance.parentId == player.id)
                     {
                         player.tempMaxPoints[i] = -BasePoints(player, 6);
                         player.tempMaxPoints[player.id] = +BasePoints(player, 6);
@@ -1518,13 +1521,15 @@ public class Library : MonoBehaviour
             player.pon[i] = false;
             player.chi[i] = false;
             player.kan[i] = false;
-            player.ankan = false;
+            player.canAnkan = false;
         }
         player.shanten = 13;
+        player.shantenIf = new int[player.hand.Count];
         player.hand.Sort();
         for (int i = 0; i < player.hand.Count; i++)
         {
             ShantenCount(player, i);
+            player.shantenIf[i] = player.shanten;
         }
         for (int i = 0; i + 3 < player.hand.Count; i++)
         {
@@ -1532,7 +1537,7 @@ public class Library : MonoBehaviour
             && idWithoutRed[player.hand[i + 1]] == idWithoutRed[player.hand[i + 2]]
             && idWithoutRed[player.hand[i + 2]] == idWithoutRed[player.hand[i + 3]])
             {
-                player.ankan = true;
+                player.canAnkan = true;
                 break;
             }
         }

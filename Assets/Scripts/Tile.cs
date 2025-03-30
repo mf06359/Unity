@@ -7,9 +7,10 @@ public class Tile : MonoBehaviour
     public Vector3 kakanTo = Vector3.zero;
     private bool isDragging = false, moved = false;
     public bool canTouch = true;
-    private readonly float smoothTime = 0.05f;
+    private readonly float smoothTime = 0.10f;
     private Coroutine moveCoroutine;
     public int place = -1;
+    public int playerid;
 
 
     private float lastMouseDownTime = 0;
@@ -17,13 +18,13 @@ public class Tile : MonoBehaviour
     private void OnMouseEnter()
     {
         if (!canTouch) return;
-        PlayerManager.instance.DisplayMachi(Library.ToInt(name));
+        GameManager.instance.Player(playerid).DisplayMachi(Library.ToInt(name));
     }
 
     private void OnMouseExit()
     {
         if (!canTouch) return;
-        PlayerManager.instance.ClearMachiDisplay();
+        GameManager.instance.Player(playerid).ClearMachiDisplay();
     }
 
     private void OnMouseDown()
@@ -39,17 +40,17 @@ public class Tile : MonoBehaviour
     private void OnMouseDrag()
     {
         if (!canTouch) return;
-        if (PlayerManager.instance == null) return;
+        if (GameManager.instance.Player(playerid) == null) return;
         if (isDragging)
         {
             transform.position = GetMouseWorldPosition() + offset;
-            if (place < PlayerManager.instance.TileCount() && transform.position.x - PlayerManager.instance.GetPosition(place).x > 0.51f)
+            if (place < GameManager.instance.Player(playerid).TileCount() && transform.position.x - GameManager.instance.Player(playerid).GetPosition(place).x > 0.51f)
             {
-                PlayerManager.instance.SwapTiles(place, 1);
+                GameManager.instance.Player(playerid).SwapTiles(place, 1);
             }
-            else if (place > 0 && transform.position.x - PlayerManager.instance.GetPosition(place).x < -0.51f)
+            else if (place > 0 && transform.position.x - GameManager.instance.Player(playerid).GetPosition(place).x < -0.51f)
             {
-                PlayerManager.instance.SwapTiles(place, -1);
+                GameManager.instance.Player(playerid).SwapTiles(place, -1);
             }
         }
     }
@@ -58,50 +59,49 @@ public class Tile : MonoBehaviour
     {
         if (!canTouch ) return;
         isDragging = false;
-        if (!moved && PlayerManager.instance.ItsMyTurn() && (Time.time - lastMouseDownTime<= 0.2f || Mathf.Abs(startPosition.y - transform.position.y) > 1))
+        if (!moved && (GameManager.instance.activePlayerId == playerid || GameManager.instance.furoNow[playerid]) && (Time.time - lastMouseDownTime<= 0.2f || Mathf.Abs(startPosition.y - transform.position.y) > 1))
         {
-            if (PlayerManager.instance == null) return;
-            PlayerManager.instance.riverCount++;
+            GameManager.instance.Player(playerid).riverCount++;
             if (kakanTo != Vector3.zero)
             {
                 MoveTo(kakanTo, true);
                 moved = true;
-                PlayerManager.instance.DiscardTile(this);
+                GameManager.instance.Player(playerid).DiscardTile(this);
                 canTouch = false;
                 return;
             }
-            if (PlayerManager.instance.riichiedJustNow >= 1)
+            if (GameManager.instance.ActivePlayer().turnCount == GameManager.instance.ActivePlayer().riichiTurn)
             {
-                MoveTo(PlayerManager.instance.riverTail + new Vector3(0.12f, 0.12f, 0), true); // true‚Å‰ñ“]‚ğ“K—p
-                if (PlayerManager.instance.riverCount % 6 == 0)
+                MoveTo(GameManager.instance.Player(playerid).riverTail + new Vector3(0.12f, 0.12f, 0), true); // true‚Å‰ñ“]‚ğ“K—p
+                if (GameManager.instance.Player(playerid).riverCount % 6 == 0)
                 {
-                    PlayerManager.instance.riverTail = PlayerManager.instance.firstRiverTail + new Vector3(0, - (PlayerManager.instance.riverCount / 6) * 0.9f, 0);
+                    GameManager.instance.Player(playerid).riverTail = GameManager.instance.Player(playerid).firstRiverTail + new Vector3(0, - (GameManager.instance.Player(playerid).riverCount / 6) * 0.9f, 0);
                 }
                 else
                 {
-                    PlayerManager.instance.riverTail += new Vector3(0.9f, 0, 0);
+                    GameManager.instance.Player(playerid).riverTail += new Vector3(0.9f, 0, 0);
                 }
             }
             else
             {
-                MoveTo(PlayerManager.instance.riverTail, true);
-                if (PlayerManager.instance.riverCount % 6 == 0)
+                MoveTo(GameManager.instance.Player(playerid).riverTail, true);
+                if (GameManager.instance.Player(playerid).riverCount % 6 == 0)
                 {
-                    PlayerManager.instance.riverTail = PlayerManager.instance.firstRiverTail + new Vector3(0, -(PlayerManager.instance.riverCount / 6) * 0.9f, 0);
+                    GameManager.instance.Player(playerid).riverTail = GameManager.instance.Player(playerid).firstRiverTail + new Vector3(0, -(GameManager.instance.Player(playerid).riverCount / 6) * 0.9f, 0);
                 }
                 else
                 {
-                    PlayerManager.instance.riverTail += new Vector3(0.66f, 0, 0);
+                    GameManager.instance.Player(playerid).riverTail += new Vector3(0.66f, 0, 0);
                 }
             }
             moved = true;
             this.transform.localScale = Vector3.one;
-            PlayerManager.instance.DiscardTile(this);
+            GameManager.instance.Player(playerid).DiscardTile(this);
             canTouch = false;
         }
         else
         {
-            MoveTo(PlayerManager.instance.firstHandPlace + new Vector3(place, 0, 0), false);
+            MoveTo(GameManager.instance.Player(playerid).firstHandPlace + new Vector3(place, 0, 0), false);
         }
     }
 
@@ -126,11 +126,10 @@ public class Tile : MonoBehaviour
         Vector3 start = transform.position;
         Quaternion startRotation = transform.rotation;
         Quaternion targetRotation; 
-        if (PlayerManager.instance == null) targetRotation = transform.rotation;
+        if (GameManager.instance.Player(playerid) == null) targetRotation = transform.rotation;
         else
         {
-            PlayerManager.instance.riichiedJustNow--;
-            targetRotation = (rotate && PlayerManager.instance.riichiedJustNow >= 1) ? Quaternion.Euler(0, 0, 90) : transform.rotation; // ‰ñ“]ˆ—‚ğˆø”‚Å§Œä
+            targetRotation = (rotate && GameManager.instance.ActivePlayer().turnCount == GameManager.instance.ActivePlayer().riichiTurn) ? Quaternion.Euler(0, 0, 90) : transform.rotation; // ‰ñ“]ˆ—‚ğˆø”‚Å§Œä
         }
 
         while (elapsed < smoothTime)

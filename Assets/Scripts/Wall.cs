@@ -6,9 +6,7 @@ public class Wall : MonoBehaviour
     public List<int> wall;
 
     public int flippedDoraCount = 0;
-
     public int usedTileCount = 0;
-    //public int doraCount = 0;
 
     private const int wanpai = 14;
     private const int allTiles = 136;

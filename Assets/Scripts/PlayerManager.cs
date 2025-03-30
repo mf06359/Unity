@@ -1,56 +1,140 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using UnityEngine.Analytics;
 
 public class PlayerManager : MonoBehaviour
 {
-    public static PlayerManager instance;
-
     [SerializeField] private Tile[] prefabTile;
     [SerializeField] private Player player;
+
     public SoundPlayer audioManager;
     public ButtonManager buttonManager;
     public PanelManager panelManager;
     public StateManager stateManager;
     public Wall wall;
 
-    public Vector3 firstHandPlace;
+    private const int turnLimit = 52;
+    public int riverCount = 0, id;
+    public bool pleaseSort = true, pleaseSkip = true, activeTileKanned = false, isComputer = true;
+    public Vector3 firstHandPlace, firstRiverTail, riverTail;
+
+    private int[] river;
     private List<Tile> tileAt;
     private List<Vector3> positions;
-    public Vector3 firstRiverTail, riverTail;
-    private const int turnLimit = 55;
-    public int riverCount = 0, activeTile = -1, activeTilePlayer = 1, tileCount = 0;
-    public bool isParent = true, pleaseSort = true;
-    public int riichiedJustNow = 0;
-    public int riichiedTurn = -1;
-    public int placeWind = 0;
-    public bool activeTileKanned = false;
-    public int parentId = 0;
+    public List<int> dora, uraDora;
 
-    public List<int> dora;
-    public List<int> uraDora;
-
-    private void Awake() { instance = this; }
-    private void Start()
-    {
-
-        tileAt = new List<Tile>();
-        positions = new List<Vector3>();
+    private void Awake()
+    { 
         riverTail = new Vector3(6, 5, 0);
         firstRiverTail = new(-1.98f, -1, 0);
         firstHandPlace = new Vector3(-7, -7, 0);
+        river = new int[37];
+        for (int i = 0; i < 37; i++)
+        {
+            river[i] = 0;
+        }
         riverTail = firstRiverTail;
-        DealHand();
-        DisplayFirstHand();
-        stateManager.UpdateText(player);
+    }
+    public void TurnStart()
+    {
+        player.turnCount++;
+        Debug.Log($"playerid {id}");
+        Debug.Log($"playerisComputer {isComputer}");
+        if (isComputer)
+        {
+            int tileId = wall.NewTsumo();
+            GameManager.instance.activeTile = tileId;
+            panelManager.ReloadRiver(tileId);
+            if (GameManager.instance.NoOneReactToDiscardedTile())
+            {
+                GameManager.instance.NextTurn();
+            }
+        }
+        else
+        {
+            Tsumo();
+        }
+    }
 
-        panelManager.ShowWanpai(wall);
-        if (isParent == true) TurnStart();
+    public void Tsumo()
+    {
+        int tsumo = wall.NewTsumo();
+        GameManager.instance.activeTile = tsumo;
+        if (Library.idWithoutRed[tsumo] != tsumo)
+        {
+            player.redDoraCount++;
+        }
+        player.hand.Add(tsumo);
+        player.latestTile = tsumo;
+        Tile newTile = Instantiate(prefabTile[tsumo], firstHandPlace + new Vector3(player.hand.Count, 0, 0), Quaternion.identity);
+        newTile.playerid = id;
+        newTile.place = player.hand.Count;
+        newTile.canTouch = true;
+        tileAt.Add(newTile);
+        positions.Add(newTile.transform.position);
+
+        Library.CalculateShantenCount(player);
+        stateManager.UpdateText(player);
+        bool canKakan = false;
+        foreach (var tile in player.hand)
+        {
+            if (player.kakan[Library.idWithoutRed[tile]] != -1)
+            {
+                canKakan = true;
+            }
+        }
+        if (id == GameManager.instance.activePlayerId)
+        {
+            int cnt = 0;
+            if (player.machiTile[Library.idWithoutRed[tsumo]]) cnt++;
+            if (player.shanten == 0 && player.riichiTurn == -1 && player.furoCount == 0) cnt++;
+            if (player.canAnkan || canKakan) cnt++;
+            if (cnt > 0)
+            {
+                buttonManager.ResetButtonPlace();
+                buttonManager.SkipToMeOn();
+                if (player.machiTile[Library.idWithoutRed[tsumo]]) buttonManager.TsumoOn();
+                if (player.shanten == 0 && player.riichiTurn == -1 && player.furoCount == 0) buttonManager.RiichiOn();
+                if (canKakan) buttonManager.KakanOn();
+                if (player.canAnkan) buttonManager.AnkanOn();
+            }
+        }
+    }
+    public void DiscardTile(Tile tile)
+    {
+        if (Library.idWithoutRed[Library.ToInt(tile.name)] != Library.ToInt(tile.name))
+        {
+            player.redDoraCount--;
+        }
+        positions.Remove(tile.transform.position);
+        player.hand.Remove(Library.ToInt(tile.name));
+        tileAt.Remove(tile);
+        river[Library.ToInt(tile.name)]++;
+        for (int i = 0; i < 37; i++)
+        {
+            player.machiTile[i] = player.machiTiles[Library.idWithoutRed[Library.ToInt(tile.name)], i];
+            player.penchanKanchanTanki[i] = player.penchanKanchanTankiIf[Library.idWithoutRed[Library.ToInt(tile.name)], i];
+            player.ryanmen[i] = player.ryanmenIf[Library.idWithoutRed[Library.ToInt(tile.name)], i];
+        }
+        ReloadMenzenDisplayWithoutTsumo();
+        if (player.turnCount > turnLimit) GameManager.instance.Restart();
+        TurnEnd();
+    }
+    public void TurnEnd()
+    {
+        buttonManager.TsumoOff();
+        buttonManager.RiichiOff();
+        buttonManager.DeactivateButtonsToMe();
+        Library.ReloadFuroMachi(player);
+        GameManager.instance.furoNow[id] = false;
+        player.kanJustNow = false;
+        if (GameManager.instance.NoOneReactToDiscardedTile()) GameManager.instance.NextTurn();
     }
 
     public void TsumoHo()
     {
-        player.hola = activeTile;
+        player.hola = GameManager.instance.activeTile;
         dora = wall.Dora();
         uraDora = wall.UraDora();
         Library.CalculatePoints(player);
@@ -59,22 +143,14 @@ public class PlayerManager : MonoBehaviour
     }
     public void RonHo()
     {
-        player.hola = activeTile;
-        player.hand.Add(activeTile);
+        player.hola = GameManager.instance.activeTile;
+        player.hand.Add(GameManager.instance.activeTile);
         player.hand.Sort();
         dora = wall.Dora();
         uraDora = wall.UraDora();
-        Library.CalculatePoints(player, activeTilePlayer);
+        Library.CalculatePoints(player, GameManager.instance.activePlayerId);
         panelManager.ShowPoints(player);
         panelManager.ShowUra(wall);
-    }
-    public void OtherPlayerTsumo()
-    {
-        int tileId = wall.NewTsumo();
-        activeTile = tileId;
-        activeTilePlayer = 1;
-        panelManager.ReloadRiver(tileId);
-        buttonManager.ReactToTileOtherPlayerDiscarded(player, tileId);
     }
     public void Chi()
     {
@@ -84,7 +160,7 @@ public class PlayerManager : MonoBehaviour
         {
             for (int j = i + 1; j < 37; j++)
             {
-                if (player.chiPair[activeTile, i, j])
+                if (player.chiPair[GameManager.instance.activeTile, i, j])
                 {
                     possiblePair.Add(new List<int> { i, j });
                 }
@@ -106,8 +182,8 @@ public class PlayerManager : MonoBehaviour
         {
             for (int j = i; j < 37; j++)
             {
-                if (player.ponPair[activeTile, i, j])
-                {
+                if (player.ponPair[GameManager.instance.activeTile, i, j])
+                {   
                     possiblePair.Add(new List<int> { i, j });
                 } 
             }
@@ -125,7 +201,7 @@ public class PlayerManager : MonoBehaviour
         List<int> kanList = new();
         for (int i = 0; i < player.hand.Count; i++)
         {
-            if (Library.idWithoutRed[activeTile] == Library.idWithoutRed[player.hand[i]])
+            if (Library.idWithoutRed[GameManager.instance.activeTile] == Library.idWithoutRed[player.hand[i]])
             {
                 kanList.Add(player.hand[i]);
             }
@@ -168,7 +244,8 @@ public class PlayerManager : MonoBehaviour
             panelManager.SaveAnkanTiles(player, kanList[0][0]);
             player.ankantsu[Library.idWithoutRed[kanList[0][0]]]++;
             ReloadMenzenDisplayWithoutTsumo();
-            player.furoNow = true;
+            GameManager.instance.furoNow[id] = true;
+            //player.furoNow = true;
             Tsumo();
             return;
         }
@@ -201,7 +278,7 @@ public class PlayerManager : MonoBehaviour
             player.furoTripletMeld[kanList[0][0]]--;
             player.kantsu[kanList[0][0]]++;
             Debug.Assert(kanList.Count == 1);
-            player.furoNow = true;
+            GameManager.instance.furoNow[id] = true;
             Tsumo();
             return;
         }
@@ -230,6 +307,7 @@ public class PlayerManager : MonoBehaviour
         ReloadMenzenDisplayWithoutTsumo();
         player.kanJustNow = true;
         panelManager.FlipNewDora(wall);
+        buttonManager.DeactivateButtonsToMe();
         Tsumo();
     }
     public void Kakan(Player player, int kakanTile)
@@ -257,25 +335,20 @@ public class PlayerManager : MonoBehaviour
             }
         }
         panelManager.SaveKakanTile(player, kakanTile);
-        player.furoNow = true;
+        GameManager.instance.furoNow[id] = true;
         ReloadMenzenDisplayWithoutTsumo();
         player.kanJustNow = true;
+        buttonManager.DeactivateButtonsToMe();
         Tsumo();
     }
     public int TileCount()
     {
         return tileAt.Count;
     }
-    public bool ItsMyTurn()
-    {
-        return player.myTurn || player.furoNow;
-    }
-    // id with Red id
-    // delete FuroTiles and reload Display
     public void Furo(List<int> partOfHand)
     {
         buttonManager.EraseActionPatternButtons();
-        player.furoNow = true;
+        GameManager.instance.furoNow[this.id] = true;
         List<int> furoMeld = new();
         for (int i = 0; i < partOfHand.Count; i++)
         {
@@ -283,7 +356,7 @@ public class PlayerManager : MonoBehaviour
         }
         if (partOfHand.Count == 2) // seq or triplet
         {
-            List<int> ids = new List<int>();
+            List<int> ids = new();
             int newestId = -1;
             for (int i = 0; i < partOfHand.Count; i++)
             {
@@ -304,7 +377,7 @@ public class PlayerManager : MonoBehaviour
             }
             else
             {
-                player.furoSeqMeld[Mathf.Max(partOfHand[0], partOfHand[1], activeTile)]++;
+                player.furoSeqMeld[Library.idWithoutRed[Mathf.Max(partOfHand[0], partOfHand[1], GameManager.instance.activeTile)]]++;
             }
             for (int i = ids.Count - 1; i >= 0; i--)
             {
@@ -333,6 +406,7 @@ public class PlayerManager : MonoBehaviour
                 }
             }
             player.kantsu[Library.idWithoutRed[partOfHand[0]]]++;
+            player.kan[Library.idWithoutRed[partOfHand[0]]] = false;
             for (int i = ids.Count - 1; i >= 0; i--)
             {
                 Tile tileToRemove = tileAt[ids[i]];
@@ -347,20 +421,47 @@ public class PlayerManager : MonoBehaviour
         {
             player.kakan[id] = player.furoHand.Count;
         }
-        ReloadFuroDisplayWithoutTsumo(furoMeld, activeTile);
+        panelManager.SaveFuroTiles(player, furoMeld, GameManager.instance.activeTile, GameManager.instance.activePlayerId);
         player.furoCount++;
         ReloadMenzenDisplayWithoutTsumo();
         Library.CalculateShantenCount(player);
     }
-    public void SkipToMe()
+    public void DisplayFirstHand()
     {
-        buttonManager.DeactivateButtonsToMe();
+        tileAt = new();
+        positions = new();
+        for (int i = 0; i < 13; i++)
+        {
+            Tile newTile = Instantiate(prefabTile[player.hand[i]], firstHandPlace + new Vector3(i, 0, 0), Quaternion.identity);
+            newTile.playerid = id;
+            newTile.place = i;
+            newTile.canTouch = true;
+            tileAt.Add(newTile);
+            positions.Add(newTile.transform.position);
+        }
     }
-    public void SkipToOthers()
+    void ReloadMenzenDisplayWithoutTsumo()
     {
-        buttonManager.DeactivateButtonsToOtherPlayer();
-        TurnStart();
+        if (pleaseSort)
+        {
+            tileAt.Sort((a, b) => (Library.ToInt(a.name)).CompareTo(Library.ToInt(b.name)));
+        }
+        for (int i = 0; i < player.hand.Count; i++)
+        {
+            tileAt[i].place = i;
+            positions[i] = firstHandPlace + new Vector3(i, 0, 0);
+            tileAt[i].MoveTo(positions[i], false);
+            if (player.riichiTurn != -1)
+            {
+                tileAt[i].canTouch = false;
+            }
+        }
     }
+
+
+
+
+    // WRITTEN BELOW IS CALLED IN THE ANOTHER FUNCTION
     public void DealHand()
     {
         for (int i = 0; i < 13; i++)
@@ -373,111 +474,12 @@ public class PlayerManager : MonoBehaviour
         }
         player.hand.Sort();
     }
-    public void DisplayFirstHand()
-    {
-        for (int i = 0; i < 13; i++)
-        {
-            Tile newTile = Instantiate(prefabTile[player.hand[i]], firstHandPlace + new Vector3(i, 0, 0), Quaternion.identity);
-            newTile.place = i;
-            newTile.canTouch = true;
-            tileAt.Add(newTile);
-            positions.Add(newTile.transform.position);
-        }
-    }
-    public void TurnStart()
-    {
-        player.turnCount++;
-        player.myTurn = true;
-        Tsumo();
-    }
-    public void Tsumo()
-    {
-        int tsumo = wall.NewTsumo();
-        activeTile = tsumo;
-        activeTilePlayer = 0;
-        if (Library.idWithoutRed[tsumo] != tsumo)
-        {
-            player.redDoraCount++;
-        }
-        player.hand.Add(tsumo);
-        player.tsumo = tsumo;
-        Tile newTile = Instantiate(prefabTile[tsumo], firstHandPlace + new Vector3(player.hand.Count, 0, 0), Quaternion.identity);
-        newTile.place = player.hand.Count;
-        newTile.canTouch = true;
-        tileAt.Add(newTile);
-        positions.Add(newTile.transform.position);
 
-        Library.CalculateShantenCount(player);
-        stateManager.UpdateText(player);
-        bool canKakan = false;
-        foreach (var tile in player.hand)
-        {
-            if (player.kakan[Library.idWithoutRed[tile]] != -1)
-            {
-                canKakan = true;
-            }
-        }
-        if (player.myTurn)
-        {
-            int cnt = 0;
-            if (player.machiTile[Library.idWithoutRed[tsumo]]) cnt++;
-            if (player.shanten == 0) cnt++;
-            if (player.ankan || canKakan) cnt++;
-            if (cnt == 0) return;
-            buttonManager.ResetButtonPlace();
-            buttonManager.SkipToMeOn();
-            if (player.machiTile[Library.idWithoutRed[tsumo]]) buttonManager.TsumoOn();
-            if (player.shanten == 0) buttonManager.RiichiOn();
-            if (canKakan) buttonManager.KakanOn();
-            if (player.ankan) buttonManager.AnkanOn();
-        }
-    }
-    public void DiscardTile(Tile tile)
+    public void SettingSkipFuro()
     {
-        //Debug.Log($"DiscardTile => tileAt.Count : {tileAt.Count}");
-        //Debug.Log($"DiscardTile => player.hand.Count : {player.hand.Count}");
-        if (Library.idWithoutRed[Library.ToInt(tile.name)] != Library.ToInt(tile.name))
-        {
-            player.redDoraCount--;
-        }
-        positions.Remove(tile.transform.position);
-        player.hand.Remove(Library.ToInt(tile.name));
-        tileAt.Remove(tile);
-        for (int i = 0; i < 37; i++)
-        {
-            player.machiTile[i] = player.machiTiles[Library.idWithoutRed[Library.ToInt(tile.name)], i];
-            player.penchanKanchanTanki[i] = player.penchanKanchanTankiIf[Library.idWithoutRed[Library.ToInt(tile.name)], i];
-            player.ryanmen[i] = player.ryanmenIf[Library.idWithoutRed[Library.ToInt(tile.name)], i];
-        }
-        ReloadMenzenDisplayWithoutTsumo();
-        if (player.turnCount > turnLimit) Restart();
-        TurnEnd();
-        OtherPlayerTsumo();
+        pleaseSkip = !pleaseSkip;
     }
-    void ReloadFuroDisplayWithoutTsumo(List<int> handId, int furoTile) { panelManager.SaveFuroTiles(player, handId, furoTile, activeTilePlayer); }
-    void ReloadMenzenDisplayWithoutTsumo()
-    {
-        if (pleaseSort)
-        {
-            tileAt.Sort((a, b) => (Library.ToInt(a.name)).CompareTo(Library.ToInt(b.name)));
-        }
-        for (int i = 0; i < player.hand.Count; i++)
-        {
-            tileAt[i].place = i;
-            positions[i] = firstHandPlace + new Vector3(i, 0, 0);
-            tileAt[i].MoveTo(positions[i], false);
-        }
-    }
-    public void TurnEnd()
-    {
-        buttonManager.TsumoOff();
-        buttonManager.RiichiOff();
-        buttonManager.DeactivateButtonsToMe();
-        Library.ReloadFuroMachi(player);
-        player.myTurn = false;
-        player.furoNow = false;
-        player.kanJustNow = false;
-    }
+
     public void SortHand()
     {
         if (pleaseSort == true)
@@ -485,7 +487,7 @@ public class PlayerManager : MonoBehaviour
             pleaseSort = false;
             return;
         }
-        if (player.myTurn)
+        if (id == GameManager.instance.activePlayerId)
         {
             Tile tempTile = tileAt[^1];
             tileAt.Remove(tempTile);
@@ -499,10 +501,18 @@ public class PlayerManager : MonoBehaviour
         for (int i = 0; i < player.hand.Count; i++)
         {
             tileAt[i].place = i;
-            positions[i] = firstHandPlace + new Vector3(i + (player.hand.Count == i + 1 && player.myTurn? 0.5f : 0), 0, 0);
+            positions[i] = firstHandPlace + new Vector3(i + (player.hand.Count == i + 1 && id == GameManager.instance.activePlayerId? 0.5f : 0), 0, 0);
             tileAt[i].MoveTo(positions[i], false);
         }
         pleaseSort = true;
+    }
+    public void Riichi() 
+    { 
+        if (player.turnCount == 1)
+        {
+            player.doubleriichiNow = true;
+        }
+        player.riichiTurn = player.turnCount;
     }
     public void DisplayMachi(int tileInt) { panelManager.DisplayMachi(player, tileInt); }
     public void ClearMachiDisplay() { panelManager.ClearMachiDisplay(); }
@@ -521,19 +531,19 @@ public class PlayerManager : MonoBehaviour
         tileAt[draggedId].MoveTo(positions[draggedId], false);
         tileAt[targetId].MoveTo(positions[targetId], false);
     }
-    public void Riichi() 
-    { 
-        if (player.turnCount == 1)
-        {
-            player.doubleriichiNow = true;
-        }
-        player.riichiNow = true;
-        riichiedJustNow = 2;
-        player.riichiTurn = player.turnCount;
-    }
     public Vector3 GetPosition(int index) {
-        if (index < 0 || positions.Count <= index) return positions[^1];
+        if (index < 0 || positions.Count <= index)
+            //return positions[^1];
+            return Vector3.zero;
         return positions[index]; 
     }
-    public void Restart() { SceneManager.LoadScene("SceneWithNewScript"); }
+    public void SkipToOthers()
+    {
+        buttonManager.DeactivateButtonsToOtherPlayer();
+        GameManager.instance.CountWaiting();
+    }
+    public Player Player()
+    {
+        return player;
+    }
 }

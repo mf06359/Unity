@@ -7,7 +7,7 @@ public class DisplayPointPanel : MonoBehaviour
     [SerializeField] private TMP_Text displayTMPText; // TextMeshProópÇÃéQè∆
     [SerializeField] private GameObject button;
 
-    public void ShowListWithNumbers(Player player)
+    public void ShowPoints(Player player)
     {
         string result = "";
 
@@ -25,7 +25,7 @@ public class DisplayPointPanel : MonoBehaviour
         }
 
         displayTMPText.text = result;
-        this.gameObject.SetActive(true);
-        button.gameObject.SetActive(true);
+        gameObject.SetActive(true);
+        button.SetActive(true);
     }
 }
