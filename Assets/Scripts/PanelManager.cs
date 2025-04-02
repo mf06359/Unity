@@ -1,24 +1,24 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class PanelManager : MonoBehaviour
 {
-    [SerializeField] private GameObject playerPanel;
-    [SerializeField] private GameObject riverPanel;
-    [SerializeField] private GameObject machiPanel;
-    [SerializeField] private DisplayPointPanel displayPointPanel;
-
+    public static PanelManager instance;
 
     [SerializeField] Tile[] prefabTile;
     [SerializeField] Tile tileBack;
+
+    public GameObject panel;
+
     public List<Transform> assets;
-    public List<Transform> river;
+    public List<Transform>[] river;
     public List<Transform> furo;
     public List<Transform> hand;
     public List<Transform> kakanTiles;
 
     private Vector3 nextPlace;
-    private Vector3 riverPlace;
+    private Vector3[] riverPlace;
     private Vector3 nextFuroPlace;
     private Vector3 nextDoraPlace;
     private Vector3 firstDoraPlace;
@@ -26,21 +26,54 @@ public class PanelManager : MonoBehaviour
     private List<Transform> doraSet;
     private List<Transform> backSet;
 
+    [SerializeField] private TMP_Text displayTMPText;
+    [SerializeField] private GameObject button;
 
-    public void ShowPoints(Player player)
+    public int id = -1;
+
+    readonly Vector3[] dx = {
+        new( 1, 0, 0),
+        new( 0, 1, 0),
+        new(-1, 0, 0),
+        new( 0,-1, 0),
+    };
+
+    public void ShowPoints(PlayerManager player)
     {
-        displayPointPanel.ShowPoints(player);
+        string result = "";
+
+        result += $"       {player.maxPoints[(player.id + 2) % 4]}        \n";
+        result += $"{player.maxPoints[(player.id + 3) % 4]}    {player.maxPoints[(player.id + 1) % 4]}\n";
+        result += $"       {player.maxPoints[(player.id + 0) % 4]}        \n\n";
+
+        result += $"{player.fu}•„  {player.han}–|\n";
+
+
+        foreach (string name in player.yakuNames)
+        {
+            result += name;
+            result += "\n";
+        }
+
+        displayTMPText.text = result;
+        gameObject.SetActive(true);
+        button.SetActive(true);
     }
 
-    private void Awake()
+
+    public void ShowPoints(int winPlayerId, List<int> points, List<string> yakuNames)
+    {
+    }
+
+    public void StartSetting()
     {
         assets = new List<Transform>();
-        river = new List<Transform>();
+        river = new List<Transform>[] { new(), new(), new(), new() };
         furo = new List<Transform>();
         hand = new List<Transform>();
         doraSet = new List<Transform>();
         backSet = new List<Transform>();
-        riverPlace = new Vector3(3, 7, 0);
+        riverPlace = new Vector3[4];
         nextFuroPlace = new Vector3(13, -7);
         firstDoraPlace = new Vector3(-500, -500, 0);
         nextDoraPlace = firstDoraPlace;
@@ -106,21 +139,25 @@ public class PanelManager : MonoBehaviour
         }
     }
 
-    public void ReloadRiver(int tileId)
+
+    // CHECKED
+    public void ReloadRiver(int discardPlayerId, int tileId)
     {
-        if (riverPlace == Vector3.zero) riverPlace = new Vector3(3, 7, 0);
-        Tile newTile = Instantiate(prefabTile[tileId], riverPlace, Quaternion.identity);
+        int relativeId = (discardPlayerId + Rule.numberOfPlayers - id) % 4;
+        Debug.Log(relativeId);
+        if (riverPlace[discardPlayerId] == Vector3.zero) riverPlace[discardPlayerId] = -1.66f * dx[relativeId] - 2.5f * dx[(relativeId + 1) % 4];
+        Tile newTile = Instantiate(prefabTile[tileId], riverPlace[discardPlayerId], Quaternion.Euler(0, 0, 90 * relativeId));
         newTile.canTouch = false;
         newTile.transform.localScale = Vector3.one;
-        river.Add(newTile.transform);
-        riverPlace += new Vector3(0.66f, 0, 0);
-        if (riverPlace.x >= 9.5f)
+        river[discardPlayerId].Add(newTile.transform);
+        riverPlace[discardPlayerId] += 0.66f * dx[relativeId];
+        if (river[discardPlayerId].Count % 6 == 0)
         {
-            riverPlace += new Vector3(-6.6f, -0.9f, 0);
+            riverPlace[discardPlayerId] = -1.66f * dx[relativeId] + (-2.5f - (river[discardPlayerId].Count / 6) * 0.9f) * dx[(relativeId + 1) % 4];
         }
     }
 
-    public void SaveKakanTile(Player player, int kakanTile)
+    public void SaveKakanTile(PlayerManager player, int kakanTile)
     {
         foreach (Transform transform in kakanTiles)
         {
@@ -130,7 +167,7 @@ public class PanelManager : MonoBehaviour
             }
         }
     }
-    public void SaveAnkanTiles(Player player, int ankanTile)
+    public void SaveAnkanTiles(PlayerManager player, int ankanTile)
     {
         for (int i = 0; i < 4; i++)
         {
@@ -141,7 +178,7 @@ public class PanelManager : MonoBehaviour
         }
     }
 
-    public void SaveFuroTiles(Player player, List<int> furoMeld, int furoTile, int whoDiscard = 1)
+    public void SaveFuroTiles(PlayerManager player, List<int> furoMeld, int furoTile, int whoDiscard = 1)
     {
         Debug.Assert(furoMeld.Count > 0);
         if (whoDiscard == 1)
@@ -190,8 +227,8 @@ public class PanelManager : MonoBehaviour
         }
     }
 
-    public void DisplayMachi(Player player, int tileInt) { SaveTilesInPanel(player, tileInt); }
-    private void SaveTilesInPanel(Player player, int tileInt)
+    public void DisplayMachi(PlayerManager player, int tileInt) { SaveTilesInPanel(player, tileInt); }
+    private void SaveTilesInPanel(PlayerManager player, int tileInt)
     {
         nextPlace = new Vector3(-10, -2, 0);
         for (int i = 0; i < 37; i++)

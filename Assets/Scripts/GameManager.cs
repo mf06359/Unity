@@ -1,106 +1,241 @@
+using Photon.Pun;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-public class GameManager : MonoBehaviour
+public class GameManager : MonoBehaviourPun
 {
     public static GameManager instance;
-    
+    //private PhotonView photonView;
+    public PlayerManager playerManager;
     [SerializeField] Wall wall;
-    
-    [SerializeField] PlayerManager[] playerManager;
 
-    public List<int> points;
+    public List<int> points, dora, uraDora;
 
-    public int numberOfPlayers;
-    public int turnCount = 0;
-    public int placeWind = 0;
-    public int honbaCount = 0;
+
+    public int waitingCount = 0, activePlayerId = 0, activeTile = 0, numberOfPlayers ,turnCount = 0, placeWind = 0, honba = 0;
+
     public int parentId = 0;
-    public int activePlayerId = 0;
-    public int activeTile = 0;
-    public bool[] furoNow;
-    int skipFuroCount = 0;
-
-    //[SerializeField] private GameObject titlePanel;
-    //[SerializeField] private GameObject startingPanel;
-    //[SerializeField] private GameObject displayPointPanel;
-    //[SerializeField] private GameObject gameSetPanel;
-
+    public GameObject playerManagerPrefab;  
 
     private void Awake()
     {
-        instance = this;
-        furoNow = new bool[4];
+        if (instance == null)
+        {
+            instance = this;
+            numberOfPlayers = Rule.numberOfPlayers;
+            playerManager = FindFirstObjectByType<PlayerManager>();
+            waitingCount = numberOfPlayers - 1;
+        }
     }
 
-    private void Start()
+
+    // WRITTEN BELOW IS FUNCTIONS AFTER CONNECTING
+    //   |  |
+    //   |  |
+    // __|  |__
+    // \      /
+    //  \    / 
+    //   \  /
+    //    \/
+
+
+    public void GameStart()
     {
-        numberOfPlayers = Rule.numberOfPlayers;
+        photonView.RPC("StartSetting", RpcTarget.All);
         for (int i = 0; i < numberOfPlayers; i++)
         {
             points.Add(Rule.startPoint);
-            playerManager[i].isComputer = (i != 0);
-            playerManager[i].id = i;
         }
-        DealHandToPlayers();
-        NextTurn(true);
+        NewRoundStart();
+    }
+    [PunRPC]
+    public void StartSetting()
+    {
+        playerManager.StartSetting();
     }
 
-    public void DealHandToPlayers()
+    public void NewRoundStart()
     {
+        wall = new(); wall.Reset();
         for (int i = 0; i < numberOfPlayers; i++)
         {
-            playerManager[i].DealHand();
-            if (!playerManager[i].isComputer)
+            List<int> tempHand = new();
+            for (int j = 0; j < 13; j++)
             {
-                playerManager[i].DisplayFirstHand();
-                playerManager[i].panelManager.ShowWanpai(wall);
-                playerManager[i].stateManager.UpdateText(playerManager[i].Player());
+                tempHand.Add(wall.NewTsumo());
             }
+            tempHand.Sort();
+            photonView.RPC("DealHand", RpcTarget.All, i, tempHand.ToArray());
         }
+        photonView.RPC("DisplayFirstHand", RpcTarget.All);
+        NewTurn(true);
+    }
+    [PunRPC]
+    public void DealHand(int playerId, int[] tempHand)
+    {
+        if (playerId == playerManager.id) playerManager.DealHand(playerId, tempHand);
     }
 
-    public void CountWaiting()
+    [PunRPC]
+    public void DisplayFirstHand()
     {
-        skipFuroCount++;
-        if (skipFuroCount == numberOfPlayers - 1)
-        {
-            skipFuroCount = 0;
-            NextTurn();
-        }
+        playerManager.DisplayFirstHand();
     }
 
-    public Player ActivePlayer()
+    public void NewTurn(bool firstTsumo = false)
     {
-        return playerManager[activePlayerId].Player();
-    }
-
-    public PlayerManager Player(int id)
-    {
-        return playerManager[id];
-    }
-
-    public void NextTurn(bool isFirstTurn = false)
-    {
-        if (isFirstTurn) activePlayerId = 0;
+        if (firstTsumo) activePlayerId = parentId;
         else activePlayerId = (activePlayerId + 1) % numberOfPlayers;
-        playerManager[activePlayerId].TurnStart();
+        activeTile = wall.NewTsumo();
+        photonView.RPC("StartTurn", RpcTarget.All, activePlayerId, activeTile); //  points have to be included
     }
 
-    public bool NoOneReactToDiscardedTile()
+    [PunRPC]
+    public void StartTurn(int activePlayerId,  int activeTile)
     {
-        skipFuroCount = 0;
-        Debug.Log($"ReactToDiscardedTile in GM Called");
-        for (int i = 0; i < numberOfPlayers; i++)
+        playerManager.activePlayerId = activePlayerId;
+        playerManager.activeTile = activeTile;
+        if (playerManager.id == activePlayerId) playerManager.StartTurn(activeTile);
+    }
+
+    // WRITTEN BELOW ARE FUNCTIONS AFTER   WAITING ACTION
+    //   |  |
+    //   |  |
+    // __|  |__
+    // \      /
+    //  \    / 
+    //   \  /
+    //    \/
+
+    [PunRPC]
+    public void AnkanTsumo(int playerId, string action)
+    {
+    }
+    [PunRPC]
+    public void ReloadRiver(int playerid, int tileid)
+    {
+        playerManager.ReloadRIver(playerid, tileid);
+    }
+
+    // WRITTEN BELOW ARE FUNCTIONS AFTER   WAITING ACTION
+    //   |  |
+    //   |  |
+    // __|  |__
+    // \      /
+    //  \    / 
+    //   \  /
+    //    \/
+    [PunRPC]
+    public void EndTurn()
+    {
+        if (playerManager.id == activePlayerId)
         {
-            if (i != activePlayerId)
+            playerManager.EndTurn();
+        }
+    }
+
+
+
+    // PM to GM
+    [PunRPC]
+    public void ActionFromPlayer_RPC(int playerId, string action, Tile tile)
+    {
+        Debug.Log($"Player {playerId} ‚ª {action} ‚ðŽÀs");
+
+        if (action == "DiscardTile")
+        {
+            photonView.RPC("ReactToDiscardedTile", RpcTarget.All, playerId, tile);
+        }
+    }
+
+    //[PunRPC]
+    //public void ActionFromPlayer_RPC(int playerId, string action, int num, int tileId)
+    //{
+    //    Debug.Log($"Player {playerId} ‚ª {action} ‚ðŽÀs");
+
+    //    if (action == "AddWaitingCount")
+    //    {
+    //        AddWaitingCount(num, tileId);
+    //    }
+    //    else if (action == "TsumoHo")
+    //    {
+    //        TsumoHo(num);
+    //    }
+    //    //else
+    //    //{
+    //    //    AnkanTsumo(playerId, num);
+    //    //}
+    //}
+
+    public void TsumoHo(int num)
+    {
+        dora = wall.Dora();
+        uraDora = wall.UraDora();
+        if (num == parentId)
+        {
+            honba++;
+            NewRoundStart();
+        }
+        else
+        {
+            parentId = (parentId + 1) % numberOfPlayers;
+            if (parentId == 0)
             {
-                skipFuroCount += playerManager[i].buttonManager.ReactToTileOtherPlayerDiscarded(playerManager[i].Player());
+                placeWind++;
+                if (placeWind == 2)
+                {
+                    GameOver();
+                }
             }
         }
-        return skipFuroCount == numberOfPlayers - 1;
     }
-    public void Restart() { SceneManager.LoadScene("SceneWithNewScript"); }
 
+    public void RonHo(int num)
+    {
+        dora = wall.Dora();
+        uraDora = wall.UraDora();
+        //Library.CalculatePoints(playerManager[num]);
+    }
+
+    [PunRPC]
+    public void ReactToDiscardedTile(int discardPlayerId, int tileId)
+    {
+        if (playerManager.id != discardPlayerId)
+        {
+            playerManager.ReactToDiscardedTile(discardPlayerId, tileId);
+        }
+    }
+    [PunRPC]
+    public void AddWaitingCount(int num, int discardedTileId)
+    {
+        Debug.Log($"AddWaitingCount Called from {playerManager.id}");
+        waitingCount -= num;
+        if (waitingCount == 0)
+        {
+            waitingCount = numberOfPlayers - 1;
+
+            photonView.RPC("EndTurn", RpcTarget.All);
+
+            photonView.RPC("ReloadRiver", RpcTarget.All, activePlayerId, discardedTileId);
+
+            NewTurn();
+        }
+    }
+
+    // WRITTEN BELOW ARE FUNCTIONS AFTER GAMESET
+    //   |  |
+    //   |  |
+    //   |  |
+    //   |  |
+    //   |  |
+    // __|  |__
+    // \      /
+    //  \    / 
+    //   \  /
+    //    \/
+
+    public void GameOver()
+    {
+        photonView.RPC("GameOver", RpcTarget.All, points);
+    }
 }

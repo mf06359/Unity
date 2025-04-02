@@ -11,13 +11,9 @@ public class Wall : MonoBehaviour
     private const int wanpai = 14;
     private const int allTiles = 136;
 
-    private void Awake()
+    public void Reset()
     {
-        wall = new List<int>();
-    }
-
-    private void Start()
-    {
+        wall = new();
         PileTiles();
         Shuffle();
     }

@@ -25,19 +25,6 @@ public class ButtonManager : MonoBehaviour
 
     private Vector3 canvasPlace, firstButtonPlace, nextButtonPlace, buttonDistance;
 
-
-    //private void Awake()
-    //{
-    //    tsumoButton.transform.parent = buttonPanel.transform;
-    //    riichiButton.transform.parent = buttonPanel.transform;
-    //    ponButton.transform.parent = buttonPanel.transform;
-    //    chiButton.transform.parent = buttonPanel.transform;
-    //    kanButton.transform.parent = buttonPanel.transform;
-    //    ronButton.transform.parent = buttonPanel.transform;
-    //    skipButton.transform.parent = buttonPanel.transform;
-    //}
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         canvasPlace = new(960, 540, 0);
@@ -61,7 +48,7 @@ public class ButtonManager : MonoBehaviour
         nextButtonPlace = firstButtonPlace;
     }
 
-    public void CreateGroupedImageButtons(Player player, List<List<int>> tileNumberGroups)
+    public void CreateGroupedImageButtons(PlayerManager player, List<List<int>> tileNumberGroups)
     {
         Debug.Log("CreatedGroupedImageButtons called");
         Debug.Log($"imageGroupsCount : {tileNumberGroups.Count}");
@@ -111,14 +98,14 @@ public class ButtonManager : MonoBehaviour
             }
 
             // ボタンのクリックイベント
-            int capturedIndex = groupIndex;
-            button.onClick.AddListener(() =>
-            {
-                GameManager.instance.Player(player.id).Furo(tileNumberGroup);
-            });
+            //int capturedIndex = groupIndex;
+            //button.onClick.AddListener(() =>
+            //{
+            //    GameManager.instance.Player(player.id).Furo(tileNumberGroup);
+            //});
         }
     }
-    public void CreateKanButtons(Player player, List<int[]> tileNumberGroups)
+    public void CreateKanButtons(PlayerManager player, List<int[]> tileNumberGroups)
     {
         for (int groupIndex = tileNumberGroups.Count - 1; groupIndex >= 0; groupIndex--)
         {
@@ -162,33 +149,33 @@ public class ButtonManager : MonoBehaviour
             imageRT.anchoredPosition = new Vector3((imageSize + 3 * imageSpacing) / 2f, 0, 0);
 
             // ボタンのクリックイベント
-            int capturedIndex = groupIndex;
-            if (isKakan == 0)
-            {
-                button.onClick.AddListener(() =>
-                {
-                    GameManager.instance.Player(player.id).Ankan(player, tileNumberGroup[0]);
+            //int capturedIndex = groupIndex;
+            //if (isKakan == 0)
+            //{
+            //    button.onClick.AddListener(() =>
+            //    {
+            //        GameManager.instance.Player(player.id).Ankan(player, tileNumberGroup[0]);
 
-                });
-            }
-            else
-            {
-                button.onClick.AddListener(() =>
-                {
-                    GameManager.instance.Player(player.id).Kakan(player, tileNumberGroup[0]);
-                });
-            }
+            //    });
+            //}
+            //else
+            //{
+            //    button.onClick.AddListener(() =>
+            //    {
+            //        GameManager.instance.Player(player.id).Kakan(player, tileNumberGroup[0]);
+            //    });
+            //}
         }
     }
 
     public void DeactivateButtonsToMe() { AnkanOff(); KakanOff(); TsumoOff(); RiichiOff(); SkipToMeOff(); }
     public void DeactivateButtonsToOtherPlayer() { PonOff(); ChiOff(); KanOff(); RonOff(); SkipToOthersOff(); }
-    public int ReactToTileOtherPlayerDiscarded(Player player)
+    public int ReactToTileOtherPlayerDiscarded(PlayerManager player)
     {
-        if (GameManager.instance.Player(player.id).pleaseSkip && player.riichiTurn == -1)
-        {
-            return 1;
-        }
+        //if (GameManager.instance.Player(player.id).pleaseSkip && player.riichiTurn == -1)
+        //{
+        //    return 1;
+        //}
             int tileId = GameManager.instance.activeTile;
         int buttonNumber = 1; // for skip button
         ResetButtonPlace();

@@ -9,7 +9,7 @@ public class StateManager : MonoBehaviour
     {
         shanten = 14;
     }
-    public void UpdateText(Player player)
+    public void UpdateText(PlayerManager player)
     {
         shanten = player.shanten;
         text.text = "Shanten Count : " + shanten;

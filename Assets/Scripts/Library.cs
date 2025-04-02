@@ -79,7 +79,7 @@ public class Library : MonoBehaviour
     // child's ron -> 4BP from who dealed in
     // parent's tsumo -> 2BP from 3 child
     // parent's ron -> 6BP from who dealed in
-    public static int BasePoints(Player player, int C)
+    public static int BasePoints(PlayerManager player, int C)
     {
         if (player.tempHan >= 78) return 48000 * C;
         if (player.tempHan >= 65) return 40000 * C;
@@ -110,7 +110,7 @@ public class Library : MonoBehaviour
     }
 
     // if RonToWho == -1 => TsumoHo else RonHo
-    public static void CalculatePoints(Player player, int RonToWho = -1)
+    public static void CalculatePoints(PlayerManager player, int RonToWho = -1)
     {
         Debug.Log("CalculatePoints Called");
         player.hand.Sort();
@@ -119,7 +119,7 @@ public class Library : MonoBehaviour
         HolaSevenPairs(player, RonToWho);
         HolaWithHead(player, 0, RonToWho);
     }
-    private static void CountTiles(Player player)
+    private static void CountTiles(PlayerManager player)
     {
         Debug.Log("CountTiles Called");
         for (int i = 0; i < 37; i++)
@@ -148,7 +148,7 @@ public class Library : MonoBehaviour
             player.count[idWithoutRed[player.hand[i]]]++;
         }
     }
-    private static void HolaWithHead(Player player, int usedTiles, int RonToWho = -1)
+    private static void HolaWithHead(PlayerManager player, int usedTiles, int RonToWho = -1)
     {
         if (PopCount(((1 << player.hand.Count) - 1) & ~usedTiles) == 2)
         {
@@ -269,9 +269,8 @@ public class Library : MonoBehaviour
             }
         }
     }
-    private static void HolaNormal(Player player, int RonToWho = -1)
+    private static void HolaNormal(PlayerManager player, int RonToWho = -1)
     {
-        if (player.latestTile != -1) return;
         Debug.Log("HolaNormal Called");
         player.tempFu = 20;
         player.tempHan = 0;
@@ -594,7 +593,7 @@ public class Library : MonoBehaviour
         }
         // Haitei // Houtei // CHECKED
         {
-            if (GameManager.instance.Player(player.id).wall.usedTileCount == 136 - 14)
+            //if (GameManager.instance.Player(player.id).wall.usedTileCount == 136 - 14)
             {
                 if (GameManager.instance.activePlayerId == player.id)
                 {
@@ -645,8 +644,8 @@ public class Library : MonoBehaviour
         {
             for (int i = 0; i < 3; i++)
             {
-                if (player.seqMeld[i * 10 + 2] + player.furoSeqMeld[i * 10 + 2] > 0 && 
-                    player.seqMeld[i * 10 + 6] + player.furoSeqMeld[i * 10 + 6] > 0 && 
+                if (player.seqMeld[i * 10 + 2] + player.furoSeqMeld[i * 10 + 2] > 0 &&
+                    player.seqMeld[i * 10 + 6] + player.furoSeqMeld[i * 10 + 6] + player.seqMeld[i * 10 + 5] + player.furoSeqMeld[i * 10 + 5] > 0 && 
                     player.seqMeld[i * 10 + 9] + player.furoSeqMeld[i * 10 + 9] > 0 )
                 {
                     player.tempYakuNames.Add("一気通貫");
@@ -823,7 +822,7 @@ public class Library : MonoBehaviour
         }
         // ChanKan
         {
-            if (GameManager.instance.Player(player.id).activeTileKanned)
+            //if (GameManager.instance.Player(player.id).activeTileKanned)
             {
                 player.tempYakuNames.Add("槍槓");
                 player.tempHan += 1;
@@ -849,10 +848,10 @@ public class Library : MonoBehaviour
         // Dora 
         {
             int doraCount = 0;
-            foreach (var dora in GameManager.instance.Player(player.id).dora)
-            {
-                doraCount += player.count[dora];
-            } 
+            //foreach (var dora in GameManager.instance.Player(player.id).dora)
+            //{
+            //    doraCount += player.count[dora];
+            //} 
             if (doraCount > 0)
             {
                 player.tempYakuNames.Add($"ドラ {doraCount}");
@@ -864,10 +863,10 @@ public class Library : MonoBehaviour
             if (player.riichiTurn != -1)
             {
                 int uraDoraCount = 0;
-                foreach (var dora in GameManager.instance.Player(player.id).uraDora)
-                {
-                    uraDoraCount += player.count[dora];
-                }
+                //foreach (var dora in GameManager.instance.Player(player.id).uraDora)
+                //{
+                //    uraDoraCount += player.count[dora];
+                //}
                 if (uraDoraCount > 0)
                 {
                     player.tempYakuNames.Add($"裏ドラ {uraDoraCount}");
@@ -893,7 +892,7 @@ public class Library : MonoBehaviour
         }
         ReloadPayPoints(player, RonToWho);
     }
-    public static void HolaSevenPairs(Player player, int RonToWho = -1)
+    public static void HolaSevenPairs(PlayerManager player, int RonToWho = -1)
     {
         Debug.Log("HolaSevenPairs Called");
         bool didFuro = (player.furoCount > 0);
@@ -959,7 +958,7 @@ public class Library : MonoBehaviour
         }
         // Haitei // Houtei
         {
-            if (GameManager.instance.Player(player.id).wall.usedTileCount == 136 - 14)
+            //if (GameManager.instance.Player(player.id).wall.usedTileCount == 136 - 14)
             {
                 if (GameManager.instance.activePlayerId == player.id)
                 {
@@ -1037,7 +1036,7 @@ public class Library : MonoBehaviour
         }
         // ChanKan 
         {
-            if (GameManager.instance.Player(player.id).activeTileKanned)
+            //if (GameManager.instance.Player(player.id).activeTileKanned)
             {
                 player.tempYakuNames.Add("槍槓");
                 player.tempHan += 1;
@@ -1050,13 +1049,13 @@ public class Library : MonoBehaviour
         // Dora // VERIFIED
         {
             int doraCount = 0;
-            foreach (var dora in GameManager.instance.Player(player.id).dora)
-            {
-                if (player.count[dora] > 0)
-                {
-                    doraCount += player.count[dora];
-                }
-            } 
+            //foreach (var dora in GameManager.instance.Player(player.id).dora)
+            //{
+            //    if (player.count[dora] > 0)
+            //    {
+            //        doraCount += player.count[dora];
+            //    }
+            //} 
             if (doraCount > 0)
             {
                 player.tempYakuNames.Add("ドラ");
@@ -1070,13 +1069,13 @@ public class Library : MonoBehaviour
             if (player.riichiTurn != -1)
             {
                 int uraDoraCount = 0;
-                foreach (var dora in GameManager.instance.Player(player.id).uraDora)
-                {
-                    if (player.count[dora] > 0)
-                    {
-                        uraDoraCount += player.count[dora];
-                    }
-                }
+                //foreach (var dora in GameManager.instance.Player(player.id).uraDora)
+                //{
+                //    if (player.count[dora] > 0)
+                //    {
+                //        uraDoraCount += player.count[dora];
+                //    }
+                //}
                 if (uraDoraCount > 0)
                 {
                     player.tempYakuNames.Add("裏ドラ");
@@ -1096,7 +1095,7 @@ public class Library : MonoBehaviour
         }
         ReloadPayPoints(player, RonToWho);
     }
-    public static void HolaYakuman(Player player, int RonToWho)
+    public static void HolaYakuman(PlayerManager player, int RonToWho)
     {
         Debug.Log("HolaYakuman");
         player.tempFu = 0;
@@ -1178,7 +1177,7 @@ public class Library : MonoBehaviour
                 }
                 if (kindCount == 4 && RonToWho == -1)
                 {
-                    if (player.count[player.hola] == 2)
+                    if (player.count[player.latestTile] == 2)
                     {
                         player.tempYakuNames.Add("四暗刻単騎待ち");
                         player.tempHan += 26;
@@ -1210,7 +1209,7 @@ public class Library : MonoBehaviour
                     }
                     if (isChuren && player.hand.Count == 14)
                     {
-                        if (doubleCountId == player.hola)
+                        if (doubleCountId == player.latestTile)
                         {
                             player.tempYakuNames.Add("純正九蓮宝燈");
                             player.tempHan += 26;
@@ -1359,7 +1358,7 @@ public class Library : MonoBehaviour
         Debug.Log("Yakuman Names" + temp);
         ReloadPayPoints(player, RonToWho);
     }
-    public static void ReloadPayPoints (Player player, int RonToWho = -1)
+    public static void ReloadPayPoints (PlayerManager player, int RonToWho = -1)
     {
         player.tempMaxPoints = new int[4] { 0, 0, 0, 0 };
         player.tempFu = (player.tempFu == 25) ? player.tempFu : (player.tempFu + 9) / 10 * 10;
@@ -1437,7 +1436,7 @@ public class Library : MonoBehaviour
 
     // Written Below Is Machi Judging Function
     // OK
-    public static void ReloadFuroMachi(Player player)
+    public static void ReloadFuroMachi(PlayerManager player)
     {
         for (int i = 0; i < 37; i++)
         {
@@ -1505,7 +1504,7 @@ public class Library : MonoBehaviour
             }
         }
     }
-    public static void CalculateShantenCount(Player player)
+    public static void CalculateShantenCount(PlayerManager player)
     {
         for (int i = 0; i < 37; i++)
         {
@@ -1543,14 +1542,14 @@ public class Library : MonoBehaviour
         }
     }
 
-    public static void ShantenCount(Player player, int exceptTileId)
+    public static void ShantenCount(PlayerManager player, int exceptTileId)
     {
         NormalShantenCount(player, exceptTileId);
         SevenPairsShantenCount(player, exceptTileId);
         ThirteenOrphansShantenCount(player, exceptTileId);
     }
 
-    public static void NormalShantenCount(Player player, int exceptTileId)
+    public static void NormalShantenCount(PlayerManager player, int exceptTileId)
     {
         for (int i = 0; i + 1 < player.hand.Count; i++)
         {
@@ -1575,7 +1574,7 @@ public class Library : MonoBehaviour
         }
     }
 
-    private static void ShantenCountWithHead(Player player, int exceptTileId, int usedTiles, int shanten, int headId)
+    private static void ShantenCountWithHead(PlayerManager player, int exceptTileId, int usedTiles, int shanten, int headId)
     {
         if (PopCount(((1 << player.hand.Count) - 1) & ~usedTiles) == 2)
         {
@@ -1676,7 +1675,7 @@ public class Library : MonoBehaviour
         }
     }
 
-    private static void ShantenCountWithTanki(Player player, int exceptTileId, int usedTiles, int shanten, int tankiId) 
+    private static void ShantenCountWithTanki(PlayerManager player, int exceptTileId, int usedTiles, int shanten, int tankiId) 
     {
         if (PopCount(((1 << player.hand.Count) - 1) & ~usedTiles) == 0)
         {
@@ -1712,7 +1711,7 @@ public class Library : MonoBehaviour
             break;
         }
     }
-    private static int PairShantenCount(Player player, int i, int j)
+    private static int PairShantenCount(PlayerManager player, int i, int j)
     {
         if (idWithoutRed[player.hand[i]] == idWithoutRed[player.hand[j]])
         {
@@ -1743,16 +1742,16 @@ public class Library : MonoBehaviour
         return 1;
     }
 
-    private static bool IsNotKanji(Player player, int i)
+    private static bool IsNotKanji(PlayerManager player, int i)
     {
         return (player.hand[i] / 10) != 3;
     }
-    private static bool IsSameKind(Player player, int i, int j)
+    private static bool IsSameKind(PlayerManager player, int i, int j)
     {
         return (player.hand[i] / 10) == (player.hand[j] / 10);
     }
 
-    private static int ThreeIdToShantenCount(Player player, int i, int j, int k)
+    private static int ThreeIdToShantenCount(PlayerManager player, int i, int j, int k)
     {
         if (IsSameKind(player, i, j))
         {
@@ -1778,7 +1777,7 @@ public class Library : MonoBehaviour
         }
     }
 
-    private static int SameKindThreeIdToShantenCount(Player player, int i, int j, int k)
+    private static int SameKindThreeIdToShantenCount(PlayerManager player, int i, int j, int k)
     {
         if (DistanceInSame(player, i, j) == 0 && DistanceInSame(player, j, k) == 0)
         {
@@ -1797,12 +1796,12 @@ public class Library : MonoBehaviour
         return 1 + Mathf.Min(PairShantenCount(player, i, j), PairShantenCount(player, j, k), PairShantenCount(player, i, k));
     }
 
-    private static int DistanceInSame(Player player, int i, int j)
+    private static int DistanceInSame(PlayerManager player, int i, int j)
     {
         return toNumberOfTile[player.hand[j]] - toNumberOfTile[player.hand[i]];
     }
 
-    public static void SevenPairsShantenCount(Player player, int exceptTileId)
+    public static void SevenPairsShantenCount(PlayerManager player, int exceptTileId)
     {
         if (player.hand.Count < 13)
         {
@@ -1849,7 +1848,7 @@ public class Library : MonoBehaviour
         player.shanten = Mathf.Min(player.shanten, 6 - pairCount + threeTilesCount);
     }
 
-    public static void ThirteenOrphansShantenCount(Player player, int exceptTileId)
+    public static void ThirteenOrphansShantenCount(PlayerManager player, int exceptTileId)
     {
         if (player.hand.Count < 13)
         {

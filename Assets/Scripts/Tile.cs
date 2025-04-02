@@ -5,7 +5,7 @@ public class Tile : MonoBehaviour
 {
     private Vector3 startPosition, offset;
     public Vector3 kakanTo = Vector3.zero;
-    private bool isDragging = false, moved = false;
+    public bool isDragging = false, moved = false;
     public bool canTouch = true;
     private readonly float smoothTime = 0.10f;
     private Coroutine moveCoroutine;
@@ -18,13 +18,13 @@ public class Tile : MonoBehaviour
     private void OnMouseEnter()
     {
         if (!canTouch) return;
-        GameManager.instance.Player(playerid).DisplayMachi(Library.ToInt(name));
+        GameManager.instance.playerManager.DisplayMachi(Library.ToInt(name));
     }
 
     private void OnMouseExit()
     {
         if (!canTouch) return;
-        GameManager.instance.Player(playerid).ClearMachiDisplay();
+        GameManager.instance.playerManager.ClearMachiDisplay();
     }
 
     private void OnMouseDown()
@@ -40,17 +40,17 @@ public class Tile : MonoBehaviour
     private void OnMouseDrag()
     {
         if (!canTouch) return;
-        if (GameManager.instance.Player(playerid) == null) return;
+        if (GameManager.instance.playerManager == null) return;
         if (isDragging)
         {
             transform.position = GetMouseWorldPosition() + offset;
-            if (place < GameManager.instance.Player(playerid).TileCount() && transform.position.x - GameManager.instance.Player(playerid).GetPosition(place).x > 0.51f)
+            if (place < GameManager.instance.playerManager.TileCount() && transform.position.x - GameManager.instance.playerManager.GetPosition(place).x > 0.51f)
             {
-                GameManager.instance.Player(playerid).SwapTiles(place, 1);
+                GameManager.instance.playerManager.SwapTiles(place, 1);
             }
-            else if (place > 0 && transform.position.x - GameManager.instance.Player(playerid).GetPosition(place).x < -0.51f)
+            else if (place > 0 && transform.position.x - GameManager.instance.playerManager.GetPosition(place).x < -0.51f)
             {
-                GameManager.instance.Player(playerid).SwapTiles(place, -1);
+                GameManager.instance.playerManager.SwapTiles(place, -1);
             }
         }
     }
@@ -59,49 +59,49 @@ public class Tile : MonoBehaviour
     {
         if (!canTouch ) return;
         isDragging = false;
-        if (!moved && (GameManager.instance.activePlayerId == playerid || GameManager.instance.furoNow[playerid]) && (Time.time - lastMouseDownTime<= 0.2f || Mathf.Abs(startPosition.y - transform.position.y) > 1))
+        if (!moved && (GameManager.instance.playerManager.activePlayerId == playerid /* || GameManager.instance.furoNow[playerid] */) && (Time.time - lastMouseDownTime<= 0.2f || Mathf.Abs(startPosition.y - transform.position.y) > 1))
         {
-            GameManager.instance.Player(playerid).riverCount++;
+            GameManager.instance.playerManager.riverCount++;
             if (kakanTo != Vector3.zero)
             {
                 MoveTo(kakanTo, true);
                 moved = true;
-                GameManager.instance.Player(playerid).DiscardTile(this);
+                GameManager.instance.playerManager.DiscardTile(this);
                 canTouch = false;
                 return;
             }
-            if (GameManager.instance.ActivePlayer().turnCount == GameManager.instance.ActivePlayer().riichiTurn)
+            if (GameManager.instance.playerManager.id == GameManager.instance.playerManager.activePlayerId && GameManager.instance.playerManager.turnCount == GameManager.instance.playerManager.riichiTurn)
             {
-                MoveTo(GameManager.instance.Player(playerid).riverTail + new Vector3(0.12f, 0.12f, 0), true); // true‚Å‰ñ“]‚ğ“K—p
-                if (GameManager.instance.Player(playerid).riverCount % 6 == 0)
+                MoveTo(GameManager.instance.playerManager.riverTail + new Vector3(0.12f, 0.12f, 0), true); // true‚Å‰ñ“]‚ğ“K—p
+                if (GameManager.instance.playerManager.riverCount % 6 == 0)
                 {
-                    GameManager.instance.Player(playerid).riverTail = GameManager.instance.Player(playerid).firstRiverTail + new Vector3(0, - (GameManager.instance.Player(playerid).riverCount / 6) * 0.9f, 0);
+                    GameManager.instance.playerManager.riverTail = GameManager.instance.playerManager.firstRiverTail + new Vector3(0, - (GameManager.instance.playerManager.riverCount / 6) * 0.9f, 0);
                 }
                 else
                 {
-                    GameManager.instance.Player(playerid).riverTail += new Vector3(0.9f, 0, 0);
+                    GameManager.instance.playerManager.riverTail += new Vector3(0.9f, 0, 0);
                 }
             }
             else
             {
-                MoveTo(GameManager.instance.Player(playerid).riverTail, true);
-                if (GameManager.instance.Player(playerid).riverCount % 6 == 0)
+                MoveTo(GameManager.instance.playerManager.riverTail, true);
+                if (GameManager.instance.playerManager.riverCount % 6 == 0)
                 {
-                    GameManager.instance.Player(playerid).riverTail = GameManager.instance.Player(playerid).firstRiverTail + new Vector3(0, -(GameManager.instance.Player(playerid).riverCount / 6) * 0.9f, 0);
+                    GameManager.instance.playerManager.riverTail = GameManager.instance.playerManager.firstRiverTail + new Vector3(0, -(GameManager.instance.playerManager.riverCount / 6) * 0.9f, 0);
                 }
                 else
                 {
-                    GameManager.instance.Player(playerid).riverTail += new Vector3(0.66f, 0, 0);
+                    GameManager.instance.playerManager.riverTail += new Vector3(0.66f, 0, 0);
                 }
             }
             moved = true;
             this.transform.localScale = Vector3.one;
-            GameManager.instance.Player(playerid).DiscardTile(this);
+            GameManager.instance.playerManager.OnClickDiscard(this);
             canTouch = false;
         }
         else
         {
-            MoveTo(GameManager.instance.Player(playerid).firstHandPlace + new Vector3(place, 0, 0), false);
+            MoveTo(GameManager.instance.playerManager.firstHandPlace + new Vector3(place, 0, 0), false);
         }
     }
 
@@ -115,7 +115,7 @@ public class Tile : MonoBehaviour
     // ‰ñ“]‚ğˆø”‚Å§Œä
     public void MoveTo(Vector3 targetPosition, bool rotate)
     {
-        if (!canTouch) return;
+        if (!canTouch && GameManager.instance.playerManager.riichiTurn == -1) return;
         if (moveCoroutine != null) StopCoroutine(moveCoroutine);
         moveCoroutine = StartCoroutine(SmoothMove(targetPosition, rotate));
     }
@@ -126,10 +126,10 @@ public class Tile : MonoBehaviour
         Vector3 start = transform.position;
         Quaternion startRotation = transform.rotation;
         Quaternion targetRotation; 
-        if (GameManager.instance.Player(playerid) == null) targetRotation = transform.rotation;
+        if (GameManager.instance.playerManager == null) targetRotation = transform.rotation;
         else
         {
-            targetRotation = (rotate && GameManager.instance.ActivePlayer().turnCount == GameManager.instance.ActivePlayer().riichiTurn) ? Quaternion.Euler(0, 0, 90) : transform.rotation; // ‰ñ“]ˆ—‚ğˆø”‚Å§Œä
+            targetRotation = (rotate && GameManager.instance.playerManager.activePlayerId == GameManager.instance.playerManager.id &&  GameManager.instance.playerManager.turnCount == GameManager.instance.playerManager.riichiTurn) ? Quaternion.Euler(0, 0, 90) : transform.rotation; // ‰ñ“]ˆ—‚ğˆø”‚Å§Œä
         }
 
         while (elapsed < smoothTime)
