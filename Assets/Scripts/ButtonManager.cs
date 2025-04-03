@@ -170,28 +170,24 @@ public class ButtonManager : MonoBehaviour
 
     public void DeactivateButtonsToMe() { AnkanOff(); KakanOff(); TsumoOff(); RiichiOff(); SkipToMeOff(); }
     public void DeactivateButtonsToOtherPlayer() { PonOff(); ChiOff(); KanOff(); RonOff(); SkipToOthersOff(); }
-    public int ReactToTileOtherPlayerDiscarded(PlayerManager player)
+    public int ReactToTileOtherPlayerDiscarded(PlayerManager playerManager)
     {
-        //if (GameManager.instance.Player(player.id).pleaseSkip && player.riichiTurn == -1)
-        //{
-        //    return 1;
-        //}
-            int tileId = GameManager.instance.activeTile;
+        int tileId = GameManager.instance.activeTile;
         int buttonNumber = 1; // for skip button
         ResetButtonPlace();
-        if (player.pon[Library.idWithoutRed[tileId]] && player.riichiTurn == -1) buttonNumber++;
-        if (player.chi[Library.idWithoutRed[tileId]] && player.riichiTurn == -1) buttonNumber++;
-        if (player.kan[Library.idWithoutRed[tileId]] && player.riichiTurn == -1) buttonNumber++;
-        if (player.machiTile[Library.idWithoutRed[tileId]]) buttonNumber++;
+        //if (player.pon[Library.idWithoutRed[tileId]] && player.riichiTurn == -1) buttonNumber++;
+        //if (player.chi[Library.idWithoutRed[tileId]] && player.riichiTurn == -1) buttonNumber++;
+        //if (player.kan[Library.idWithoutRed[tileId]] && player.riichiTurn == -1) buttonNumber++;
+        if (playerManager.machiTile[Library.idWithoutRed[tileId]]) buttonNumber++;
         if (buttonNumber == 1)
         {
             Debug.Log(buttonNumber);
             return 1;
         }        SkipToOthersOn();
-        if (player.machiTile[Library.idWithoutRed[tileId]]) RonOn();
-        if (player.kan[Library.idWithoutRed[tileId]] && player.riichiTurn == -1) KanOn();
-        if (player.chi[Library.idWithoutRed[tileId]] && player.riichiTurn == -1) ChiOn();
-        if (player.pon[Library.idWithoutRed[tileId]] && player.riichiTurn == -1) PonOn();
+        if (playerManager.machiTile[Library.idWithoutRed[tileId]]) RonOn();
+        //if (player.kan[Library.idWithoutRed[tileId]] && player.riichiTurn == -1) KanOn();
+        //if (player.chi[Library.idWithoutRed[tileId]] && player.riichiTurn == -1) ChiOn();
+        //if (player.pon[Library.idWithoutRed[tileId]] && player.riichiTurn == -1) PonOn();
         return 0;
     }
 

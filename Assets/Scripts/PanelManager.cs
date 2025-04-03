@@ -1,3 +1,4 @@
+using Photon.Realtime;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -38,31 +39,46 @@ public class PanelManager : MonoBehaviour
         new( 0,-1, 0),
     };
 
-    public void ShowPoints(PlayerManager player)
+    //public void ShowPoints(PlayerManager player)
+    //{
+    //    string result = "";
+
+    //    result += $"       {points[(winPlayerId + 2) % 4]}        \n";
+    //    result += $"{points[(winPlayerId + 3) % 4]}    {points[(winPlayerId + 1) % 4]}\n";
+    //    result += $"       {points[(winPlayerId + 0) % 4]}        \n\n";
+
+    //    result += $"{player.fu}•„  {player.han}–|\n";
+
+
+    //    foreach (string name in player.yakuNames)
+    //    {
+    //        result += name;
+    //        result += "\n";
+    //    }
+
+    //    displayTMPText.text = result;
+    //    gameObject.SetActive(true);
+    //    button.SetActive(true);
+    //}
+
+
+    public void ShowPointChange(int winPlayerId, List<int> points, List<string> yakuNames, int fu, int han)
     {
         string result = "";
-
-        result += $"       {player.maxPoints[(player.id + 2) % 4]}        \n";
-        result += $"{player.maxPoints[(player.id + 3) % 4]}    {player.maxPoints[(player.id + 1) % 4]}\n";
-        result += $"       {player.maxPoints[(player.id + 0) % 4]}        \n\n";
-
-        result += $"{player.fu}•„  {player.han}–|\n";
-
-
-        foreach (string name in player.yakuNames)
+        id = GameManager.instance.playerManager.id;
+        result += $"       {points[(id + 2) % 4]}        \n";
+        result += $"{points[(id + 3) % 4]}    {points[(id + 1) % 4]}\n";
+        result += $"       {points[(id) % 4]}        \n\n";
+        result += $"{fu}•„  {han}–|\n";
+        foreach (string name in yakuNames)
         {
             result += name;
             result += "\n";
         }
 
         displayTMPText.text = result;
-        gameObject.SetActive(true);
+        panel.SetActive(true);
         button.SetActive(true);
-    }
-
-
-    public void ShowPoints(int winPlayerId, List<int> points, List<string> yakuNames)
-    {
     }
 
     public void StartSetting()
@@ -79,7 +95,7 @@ public class PanelManager : MonoBehaviour
         nextDoraPlace = firstDoraPlace;
     }
 
-    public void ShowWanpai(Wall wall)
+    public void ShowWanpai(List<int> wall)
     {
         firstDoraPlace = new Vector3(-7, 7, 0);
         nextDoraPlace = firstDoraPlace;
@@ -87,7 +103,7 @@ public class PanelManager : MonoBehaviour
         doraSet ??= new List<Transform>();
         for (int i = 0; i < 5; i++)
         {
-            Tile newTile = Instantiate(prefabTile[wall.wall[^(1 + 2 * i)]], nextDoraPlace, Quaternion.identity);
+            Tile newTile = Instantiate(prefabTile[wall[^(1 + 2 * i)]], nextDoraPlace, Quaternion.identity);
             newTile.GetComponent<SpriteRenderer>().sortingOrder = 1;
             newTile.canTouch = false;
             newTile.transform.localScale = Vector3.one;
@@ -104,14 +120,14 @@ public class PanelManager : MonoBehaviour
             backSet.Add(backTile.transform);
             nextDoraPlace += new Vector3(0.66f, 0, 0);
         }
-        FlipNewDora(wall);
+        //FlipNewDora(wall);
     }
-    public void FlipNewDora(Wall wall)
-    {
-        if (wall.flippedDoraCount == 5) return;
-        backSet[wall.flippedDoraCount].gameObject.SetActive(false);
-        wall.flippedDoraCount++;
-    }
+    //public void FlipNewDora(List<int> wall)
+    //{
+    //    if (wall.flippedDoraCount == 5) return;
+    //    backSet[wall.flippedDoraCount].gameObject.SetActive(false);
+    //    wall.flippedDoraCount++;
+    //}
 
     public void ShowUra(Wall wall)
     {
@@ -141,20 +157,15 @@ public class PanelManager : MonoBehaviour
 
 
     // CHECKED
-    public void ReloadRiver(int discardPlayerId, int tileId)
+    public void ReloadRiver(int discardPlayerId, int tileId, bool riichi)
     {
         int relativeId = (discardPlayerId + Rule.numberOfPlayers - id) % 4;
-        Debug.Log(relativeId);
-        if (riverPlace[discardPlayerId] == Vector3.zero) riverPlace[discardPlayerId] = -1.66f * dx[relativeId] - 2.5f * dx[(relativeId + 1) % 4];
-        Tile newTile = Instantiate(prefabTile[tileId], riverPlace[discardPlayerId], Quaternion.Euler(0, 0, 90 * relativeId));
+        if (river[discardPlayerId].Count % 6 == 0) riverPlace[discardPlayerId] = -1.66f * dx[relativeId] + (-2.5f - (river[discardPlayerId].Count / 6) * 0.9f) * dx[(relativeId + 1) % 4];
+        Tile newTile = Instantiate(prefabTile[tileId], riverPlace[discardPlayerId] + (riichi ? dx[relativeId] * 0.12f + dx[(relativeId + 1) % 4] * 0.12f : Vector3.zero), Quaternion.Euler(0, 0, 90 * (relativeId + (riichi ? 1 : 0))));
         newTile.canTouch = false;
         newTile.transform.localScale = Vector3.one;
         river[discardPlayerId].Add(newTile.transform);
-        riverPlace[discardPlayerId] += 0.66f * dx[relativeId];
-        if (river[discardPlayerId].Count % 6 == 0)
-        {
-            riverPlace[discardPlayerId] = -1.66f * dx[relativeId] + (-2.5f - (river[discardPlayerId].Count / 6) * 0.9f) * dx[(relativeId + 1) % 4];
-        }
+        riverPlace[discardPlayerId] += dx[relativeId] * (riichi ? 0.90f : 0.66f);
     }
 
     public void SaveKakanTile(PlayerManager player, int kakanTile)

@@ -68,8 +68,15 @@ public class GameManager : MonoBehaviourPun
             photonView.RPC("DealHand", RpcTarget.All, i, tempHand.ToArray());
         }
         photonView.RPC("DisplayFirstHand", RpcTarget.All);
+        photonView.RPC("TellOmoteAndUra", RpcTarget.All, wall.Dora().ToArray(), wall.UraDora().ToArray());
         NewTurn(true);
     }
+    [PunRPC]
+    public void TellOmoteAndUra(int[] omote, int[] ura)
+    {
+        playerManager.TellOmoteAndUra(omote, ura);
+    }
+
     [PunRPC]
     public void DealHand(int playerId, int[] tempHand)
     {
@@ -91,11 +98,13 @@ public class GameManager : MonoBehaviourPun
     }
 
     [PunRPC]
-    public void StartTurn(int activePlayerId,  int activeTile)
+    public void StartTurn(int activePlayerIdIn,  int activeTileIn)
     {
-        playerManager.activePlayerId = activePlayerId;
-        playerManager.activeTile = activeTile;
-        if (playerManager.id == activePlayerId) playerManager.StartTurn(activeTile);
+        activePlayerId = activePlayerIdIn;
+        activeTile = activeTileIn;
+        playerManager.activePlayerId = activePlayerIdIn;
+        playerManager.activeTile = activeTileIn;
+        if (playerManager.id == activePlayerIdIn) playerManager.StartTurn(activeTileIn);
     }
 
     // WRITTEN BELOW ARE FUNCTIONS AFTER   WAITING ACTION
@@ -112,9 +121,9 @@ public class GameManager : MonoBehaviourPun
     {
     }
     [PunRPC]
-    public void ReloadRiver(int playerid, int tileid)
+    public void ReloadRiver(int playerid, int tileid, bool riichi)
     {
-        playerManager.ReloadRIver(playerid, tileid);
+        playerManager.ReloadRIver(playerid, tileid, riichi);
     }
 
     // WRITTEN BELOW ARE FUNCTIONS AFTER   WAITING ACTION
@@ -190,23 +199,16 @@ public class GameManager : MonoBehaviourPun
         }
     }
 
-    public void RonHo(int num)
-    {
-        dora = wall.Dora();
-        uraDora = wall.UraDora();
-        //Library.CalculatePoints(playerManager[num]);
-    }
-
     [PunRPC]
-    public void ReactToDiscardedTile(int discardPlayerId, int tileId)
+    public void ReactToDiscardedTile(int discardPlayerId, int tileId, bool riichi)
     {
         if (playerManager.id != discardPlayerId)
         {
-            playerManager.ReactToDiscardedTile(discardPlayerId, tileId);
+            playerManager.ReactToDiscardedTile(discardPlayerId, tileId, riichi);
         }
     }
     [PunRPC]
-    public void AddWaitingCount(int num, int discardedTileId)
+    public void AddWaitingCountForNewTurn(int num, int discardedTileId, bool riichi)
     {
         Debug.Log($"AddWaitingCount Called from {playerManager.id}");
         waitingCount -= num;
@@ -216,11 +218,32 @@ public class GameManager : MonoBehaviourPun
 
             photonView.RPC("EndTurn", RpcTarget.All);
 
-            photonView.RPC("ReloadRiver", RpcTarget.All, activePlayerId, discardedTileId);
-
             NewTurn();
         }
     }
+
+    [PunRPC]
+    public void ShowPointChange(int winPlayerId, int[] maxPoints, string[] yakuNames, int fu, int han)
+    {
+        playerManager.ShowPointChange(winPlayerId, new List<int> (maxPoints), new List<string>(yakuNames), fu, han);
+    }
+
+    //[PunRPC]
+    //public void AddWaitingCountForNewRound(int num)
+    //{
+    //    waitingCount -= num;
+    //    if (waitingCount == 0)
+    //    {
+    //        waitingCount= numberOfPlayers - 1;
+
+    //        photonView.RPC("StartNewRound", RpcTarget.All);
+    //    }
+    //}
+
+    //[PunRPC]
+    //public void StartNewRound()
+    //{
+    //}
 
     // WRITTEN BELOW ARE FUNCTIONS AFTER GAMESET
     //   |  |

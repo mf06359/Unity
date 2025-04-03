@@ -29,7 +29,7 @@ public class PlayerManager : MonoBehaviour
     private int[] river;
     private List<Tile> tileAt;
     private List<Vector3> positions;
-    public List<int> dora, uraDora;
+    public int[] dora, uraDora;
 
 
     public int turnCount = 0;
@@ -118,6 +118,10 @@ public class PlayerManager : MonoBehaviour
             river[i] = 0;
         }
         riverTail = firstRiverTail;
+        tempMaxPoints = new int[4];
+        maxPoints = new int[4];
+        tempYakuNames = new List<string>();
+        yakuNames = new List<string>();
     }
 
     public void StartSetting()
@@ -133,6 +137,11 @@ public class PlayerManager : MonoBehaviour
         panelManager.id = id;
     }
 
+    public void TellOmoteAndUra(int[] omote, int[] ura)
+    {
+        dora = omote;
+        uraDora = ura;
+    }
 
     public void RequestAction(string action)
     {
@@ -223,7 +232,7 @@ public class PlayerManager : MonoBehaviour
                 canKakan = true;
             }
         }
-        if (id == GameManager.instance.activePlayerId)
+        if (id == activePlayerId)
         {
             int cnt = 0;
             if (machiTile[Library.idWithoutRed[tsumo]]) cnt++;
@@ -251,14 +260,15 @@ public class PlayerManager : MonoBehaviour
     //    \/
 
 
-    // Not Done Yet
     public void OnClickTsumoHo()
     {
-        dora = wall.Dora();
-        uraDora = wall.UraDora();
         Library.CalculatePoints(this);
-        panelManager.ShowPoints(this);
-        panelManager.ShowUra(wall);
+        GameManager.instance.photonView.RPC("ShowPointChange", RpcTarget.All, id, maxPoints, yakuNames.ToArray(), fu, han);
+    }
+
+    public void ShowPointChange(int winPlayerId, List<int> points, List<string> yakuNames, int fu, int han)
+    {
+        panelManager.ShowPointChange(winPlayerId, points, yakuNames, fu, han);
     }
 
     // Not Done Yet
@@ -357,7 +367,7 @@ public class PlayerManager : MonoBehaviour
         panelManager.SaveAnkanTiles(player, ankanTile);
         ReloadMenzenDisplayWithoutTsumo();
         player.kanJustNow = true;
-        panelManager.FlipNewDora(wall);
+        //panelManager.FlipNewDora(wall);
         buttonManager.DeactivateButtonsToMe();
         //Tsumo();
     }
@@ -394,6 +404,14 @@ public class PlayerManager : MonoBehaviour
         buttonManager.DeactivateButtonsToMe();
         //Tsumo();
     }
+    public void Riichi() 
+    { 
+        if (turnCount == 1)
+        {
+            doubleriichiNow = true;
+        }
+        riichiTurn = turnCount;
+    }
 
     // WRITTEN BELOW ARE FUNCTIONS AFTER         WAITING ACTION
     //   |  |
@@ -407,7 +425,7 @@ public class PlayerManager : MonoBehaviour
     public void OnClickDiscard(Tile tile)
     {
         DiscardTile(tile);
-        GameManager.instance.photonView.RPC("ReactToDiscardedTile", RpcTarget.All, id, Library.ToInt(tile.name));
+        GameManager.instance.photonView.RPC("ReactToDiscardedTile", RpcTarget.All, id, Library.ToInt(tile.name), riichiTurn == turnCount);
     }
 
     public void DiscardTile(Tile tile)
@@ -430,11 +448,14 @@ public class PlayerManager : MonoBehaviour
         ReloadMenzenDisplayWithoutTsumo();
     }
 
-    public void ReactToDiscardedTile(int discardPlayerId, int tileId)
+    public void ReactToDiscardedTile(int discardPlayerId, int tileId, bool riichi)
     {
         if (id == discardPlayerId) return;
-        int activeButton = 1; //buttonManager.ReactToTileOtherPlayerDiscarded(tile);
-        GameManager.instance.photonView.RPC("AddWaitingCount", RpcTarget.MasterClient, activeButton, tileId);
+        // did not furo => 1
+        // furo         => 0
+        int activeButton = buttonManager.ReactToTileOtherPlayerDiscarded(this);
+        GameManager.instance.photonView.RPC("ReloadRiver", RpcTarget.All, activePlayerId, tileId, riichi);
+        GameManager.instance.photonView.RPC("AddWaitingCountForNewTurn", RpcTarget.MasterClient, activeButton, tileId, riichi);
     }
 
 //-----------------------------------------------------------------------------------------------------------------------------------
@@ -449,17 +470,17 @@ public class PlayerManager : MonoBehaviour
         kanJustNow = false;
     }
 
-    public void RonHo()
-    {
-        latestTile = GameManager.instance.activeTile;
-        hand.Add(GameManager.instance.activeTile);
-        hand.Sort();
-        dora = wall.Dora();
-        uraDora = wall.UraDora();
-        Library.CalculatePoints(this, GameManager.instance.activePlayerId);
-        panelManager.ShowPoints(this);
-        panelManager.ShowUra(wall);
-    }
+    //public void RonHo()
+    //{
+    //    latestTile = GameManager.instance.activeTile;
+    //    hand.Add(GameManager.instance.activeTile);
+    //    hand.Sort();
+    //    dora = wall.Dora();
+    //    uraDora = wall.UraDora();
+    //    Library.CalculatePoints(this, GameManager.instance.activePlayerId);
+    //    //panelManager.ShowPoints(this);
+    //    panelManager.ShowUra(wall);
+    //}
     public void Chi()
     {
         buttonManager.DeactivateButtonsToOtherPlayer();
@@ -518,10 +539,6 @@ public class PlayerManager : MonoBehaviour
         Furo(kanList);
         kanJustNow = true;
         //Tsumo();
-    }
-    public int TileCount()
-    {
-        return tileAt.Count;
     }
     public void Furo(List<int> partOfHand)
     {
@@ -604,6 +621,37 @@ public class PlayerManager : MonoBehaviour
         ReloadMenzenDisplayWithoutTsumo();
         Library.CalculateShantenCount(this);
     }
+     public void OnClickRonHo()
+    {
+        latestTile = activeTile;
+        hand.Add(activeTile);
+        Library.CalculatePoints(this, activePlayerId);
+        GameManager.instance.photonView.RPC("ShowPointChange", RpcTarget.All, id, maxPoints, yakuNames.ToArray(), fu, han);
+    }
+
+
+    // WRITTEN BELOW ARE FUNCTIONS AFTER GAMESET
+    //   |  |
+    //   |  |
+    // __|  |__
+    // \      /
+    //  \    / 
+    //   \  /
+    //    \/
+
+    public void ShowPoints(int winPlayerId, List<int> points, List<string> yakuNames, int fu, int han)
+    {
+        panelManager.ShowPointChange(winPlayerId, points, yakuNames, fu, han);
+    }
+
+    public void ReloadRIver(int discardPlayerId, int tileId, bool riichi)
+    {
+        if (discardPlayerId != id)
+            panelManager.ReloadRiver(discardPlayerId, tileId, riichi);
+    }
+
+
+
     void ReloadMenzenDisplayWithoutTsumo()
     {
         if (pleaseSort)
@@ -622,32 +670,10 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-// 
-
-
-    // WRITTEN BELOW ARE FUNCTIONS AFTER GAMESET
-    //   |  |
-    //   |  |
-    // __|  |__
-    // \      /
-    //  \    / 
-    //   \  /
-    //    \/
-
-    public void ShowPoints(int winPlayerId, List<int> points, List<string> yakuNames)
+    public int TileCount()
     {
-        panelManager.ShowPoints(winPlayerId, points, yakuNames);
+        return tileAt.Count;
     }
-
-    public void ReloadRIver(int discardPlayerId, int tileId)
-    {
-        if (discardPlayerId != id)
-            panelManager.ReloadRiver(discardPlayerId, tileId);
-    }
-
-
-
-
 
 
     public void GameOver(List<int> points)
@@ -690,14 +716,6 @@ public class PlayerManager : MonoBehaviour
             tileAt[i].MoveTo(positions[i], false);
         }
         pleaseSort = true;
-    }
-    public void Riichi() 
-    { 
-        if (turnCount == 1)
-        {
-            doubleriichiNow = true;
-        }
-        riichiTurn = turnCount;
     }
     public void DisplayMachi(int tileInt) { panelManager.DisplayMachi(this, tileInt); }
     public void ClearMachiDisplay() { panelManager.ClearMachiDisplay(); }

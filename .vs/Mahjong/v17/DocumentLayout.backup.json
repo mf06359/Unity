@@ -3,11 +3,15 @@
   "WorkspaceRootPath": "C:\\Users\\might\\Mahjong\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|C:\\Users\\might\\Mahjong\\assets\\scripts\\panelmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|C:\\Users\\might\\Mahjong\\assets\\scripts\\rule.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\rule.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|c:\\users\\might\\mahjong\\assets\\scripts\\panelmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\panelmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|c:\\users\\might\\mahjong\\assets\\scripts\\playermanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|C:\\Users\\might\\Mahjong\\assets\\scripts\\playermanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\playermanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -25,10 +29,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|C:\\Users\\might\\Mahjong\\assets\\scripts\\tile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\tile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|C:\\Users\\might\\Mahjong\\assets\\scripts\\rule.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\rule.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{048EE090-6583-6477-2FE4-81C219E0D7DB}|Assembly-CSharp.csproj|C:\\Users\\might\\Mahjong\\assets\\scripts\\wall.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -58,11 +58,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 218,
-          "SelectedChildIndex": 9,
+          "SelectedChildIndex": 10,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "NetworkManager.cs",
               "DocumentMoniker": "C:\\Users\\might\\Mahjong\\Assets\\Scripts\\NetworkManager.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\NetworkManager.cs",
@@ -71,12 +71,11 @@
               "ViewState": "AgIAAC8AAAAAAAAAAAAcwHkAAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-04-02T03:06:23.181Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "GameManager.cs",
               "DocumentMoniker": "C:\\Users\\might\\Mahjong\\Assets\\Scripts\\GameManager.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\GameManager.cs",
@@ -85,12 +84,11 @@
               "ViewState": "AgIAAKkAAAAAAAAAAAAAANAAAAA6AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-03-29T07:07:05.731Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "PlayerManager.cs",
               "DocumentMoniker": "C:\\Users\\might\\Mahjong\\Assets\\Scripts\\PlayerManager.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\PlayerManager.cs",
@@ -99,12 +97,11 @@
               "ViewState": "AgIAAI0BAAAAAAAAAAAAwLYBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-03-29T04:52:25.385Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "ButtonManager.cs",
               "DocumentMoniker": "C:\\Users\\might\\Mahjong\\Assets\\Scripts\\ButtonManager.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\ButtonManager.cs",
@@ -113,8 +110,7 @@
               "ViewState": "AgIAAL8AAAAAAAAAAAAiwLEAAAALAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-03-29T10:06:47.62Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
@@ -126,8 +122,7 @@
               "RelativeToolTip": "Assets\\Scripts\\StateManager.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-02T14:03:51.537Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-02T14:03:51.537Z"
             },
             {
               "$type": "Document",
@@ -139,8 +134,7 @@
               "RelativeToolTip": "Assets\\Scripts\\SoundPlayer.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-02T14:03:48.44Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-02T14:03:48.44Z"
             },
             {
               "$type": "Document",
@@ -152,8 +146,7 @@
               "RelativeToolTip": "Assets\\Scripts\\ToggleButtonColor.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-02T14:03:43.915Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-02T14:03:43.915Z"
             },
             {
               "$type": "Document",
@@ -165,8 +158,7 @@
               "RelativeToolTip": "Assets\\Scripts\\Wall.cs",
               "ViewState": "AgIAAF8AAAAAAAAAAAAAAD8AAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-31T06:08:51.76Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-31T06:08:51.76Z"
             },
             {
               "$type": "Document",
@@ -178,25 +170,24 @@
               "RelativeToolTip": "Assets\\Scripts\\Library.cs",
               "ViewState": "AgIAAEADAAAAAAAAAAAawE4DAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-31T11:16:35.646Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-31T11:16:35.646Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "PanelManager.cs",
               "DocumentMoniker": "C:\\Users\\might\\Mahjong\\Assets\\Scripts\\PanelManager.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\PanelManager.cs",
               "ToolTip": "C:\\Users\\might\\Mahjong\\Assets\\Scripts\\PanelManager.cs",
               "RelativeToolTip": "Assets\\Scripts\\PanelManager.cs",
-              "ViewState": "AgIAAGwAAAAAAAAAAAA1wJsAAABMAAAAAAAAAA==",
+              "ViewState": "AgIAAJYAAAAAAAAAAABbwJsAAABMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-03-29T07:06:55.85Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 0,
               "Title": "Rule.cs",
               "DocumentMoniker": "C:\\Users\\might\\Mahjong\\Assets\\Scripts\\Rule.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Rule.cs",
@@ -209,7 +200,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "Tile.cs",
               "DocumentMoniker": "C:\\Users\\might\\Mahjong\\Assets\\Scripts\\Tile.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Tile.cs",
@@ -217,8 +208,7 @@
               "RelativeToolTip": "Assets\\Scripts\\Tile.cs",
               "ViewState": "AgIAADoAAAAAAAAAAAAowD0AAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-29T04:52:21.724Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-29T04:52:21.724Z"
             }
           ]
         }

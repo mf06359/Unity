@@ -862,9 +862,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2060213776}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: Restart
+      - m_Target: {fileID: 560112501942494328}
+        m_TargetAssemblyTypeName: PlayerManager, Assembly-CSharp
+        m_MethodName: BackToEnterance
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1198,7 +1198,7 @@ MonoBehaviour:
   - {fileID: 6686019469547486050, guid: dd2721726f6c31440aef68c468084a15, type: 3}
   - {fileID: -8144129275576567670, guid: 8477a60f140b86245b71ac02f85248c7, type: 3}
   tileBack: {fileID: 5035792085531850062, guid: 2bfb8eef484ed2b42874c93f0fe2ef03, type: 3}
-  panel: {fileID: 1465844516}
+  panel: {fileID: 467611141}
   assets: []
   furo: []
   hand: []
@@ -6538,7 +6538,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 560112501942494328}
         m_TargetAssemblyTypeName: PlayerManager, Assembly-CSharp
-        m_MethodName: RonHo
+        m_MethodName: OnClickRonHo
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -6880,7 +6880,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 560112501942494328}
         m_TargetAssemblyTypeName: PlayerManager, Assembly-CSharp
-        m_MethodName: TsumoHo
+        m_MethodName: OnClickTsumoHo
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -9892,7 +9892,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4d5d28ca37e1234eb8ed46730997cbc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerManager: {fileID: 0}
+  playerManager: {fileID: 560112501942494328}
   wall: {fileID: 725647444}
   points: 
   dora: 
@@ -10442,7 +10442,6 @@ MonoBehaviour:
   - {fileID: -8144129275576567670, guid: 8477a60f140b86245b71ac02f85248c7, type: 3}
   playerPanel: {fileID: 1497972921}
   gameSetPanel: {fileID: 467611141}
-  photonView: {fileID: 0}
   audioManager: {fileID: 2016102104}
   buttonManager: {fileID: 1949443380}
   panelManager: {fileID: 201901087}

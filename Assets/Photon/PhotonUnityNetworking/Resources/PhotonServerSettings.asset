@@ -53,6 +53,11 @@ MonoBehaviour:
   - ReloadRiver
   - AddWaitingCount
   - EndTurn
+  - ShowPointChange
+  - TellOmoteAndUra
+  - AddWaitingCountForNewTurn
+  - AddWaitingCountForNewRound
+  - StartNewRound
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1
