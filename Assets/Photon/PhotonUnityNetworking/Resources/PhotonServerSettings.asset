@@ -58,6 +58,26 @@ MonoBehaviour:
   - AddWaitingCountForNewTurn
   - AddWaitingCountForNewRound
   - StartNewRound
+  - Restart
+  - Pon
+  - chi
+  - Chi
+  - Kan
+  - Ron
+  - RiichiCall
+  - FuroStart
+  - SaveFuroTiles
+  - EraseAndSaveFuroTiles
+  - NewTurn
+  - ReloadRiverAndReactToDiscardedTile
+  - permitFuro
+  - RecodeVolume
+  - WriteVolume
+  - CountFuroCall
+  - PermitFuro
+  - WriteLog
+  - AfterFuro
+  - SetActivePlayer
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

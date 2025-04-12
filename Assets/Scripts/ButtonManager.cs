@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Photon.Pun;
 
 public class ButtonManager : MonoBehaviour
 {
@@ -15,6 +16,11 @@ public class ButtonManager : MonoBehaviour
     [SerializeField] private GameObject kanButton;
     [SerializeField] private GameObject ronButton;
     [SerializeField] private GameObject skipToOthersButton;
+
+    int ponCount = 0;
+    int chiCount = 0;
+    int kanCount = 0;
+    int ronCount = 0;
 
     public GameObject buttonPanel;
     public List<GameObject> buttonList = new();
@@ -48,7 +54,7 @@ public class ButtonManager : MonoBehaviour
         nextButtonPlace = firstButtonPlace;
     }
 
-    public void CreateGroupedImageButtons(PlayerManager player, List<List<int>> tileNumberGroups)
+    public void CreateGroupedImageButtons(PlayerManager player, List<List<int>> tileNumberGroups, float kindOfFuro)
     {
         Debug.Log("CreatedGroupedImageButtons called");
         Debug.Log($"imageGroupsCount : {tileNumberGroups.Count}");
@@ -98,11 +104,15 @@ public class ButtonManager : MonoBehaviour
             }
 
             // ボタンのクリックイベント
-            //int capturedIndex = groupIndex;
-            //button.onClick.AddListener(() =>
-            //{
-            //    GameManager.instance.Player(player.id).Furo(tileNumberGroup);
-            //});
+            int capturedIndex = groupIndex;
+            button.onClick.AddListener(() =>
+            {
+                GameManager.instance.playerManager.isFuro = true;
+                GameManager.instance.playerManager.input = tileNumberGroup;
+                DeactivateButtonsToOtherPlayer();
+                EraseActionPatternButtons();
+                GameManager.instance.photonView.RPC("CountFuroCall", RpcTarget.All, GameManager.instance.playerManager.id, kindOfFuro);
+            });
         }
     }
     public void CreateKanButtons(PlayerManager player, List<int[]> tileNumberGroups)
@@ -149,7 +159,7 @@ public class ButtonManager : MonoBehaviour
             imageRT.anchoredPosition = new Vector3((imageSize + 3 * imageSpacing) / 2f, 0, 0);
 
             // ボタンのクリックイベント
-            //int capturedIndex = groupIndex;
+            int capturedIndex = groupIndex;
             //if (isKakan == 0)
             //{
             //    button.onClick.AddListener(() =>
@@ -170,25 +180,25 @@ public class ButtonManager : MonoBehaviour
 
     public void DeactivateButtonsToMe() { AnkanOff(); KakanOff(); TsumoOff(); RiichiOff(); SkipToMeOff(); }
     public void DeactivateButtonsToOtherPlayer() { PonOff(); ChiOff(); KanOff(); RonOff(); SkipToOthersOff(); }
-    public int ReactToTileOtherPlayerDiscarded(PlayerManager playerManager)
+    public bool ReactToTileOtherPlayerDiscarded()
     {
         int tileId = GameManager.instance.activeTile;
         int buttonNumber = 1; // for skip button
         ResetButtonPlace();
-        //if (player.pon[Library.idWithoutRed[tileId]] && player.riichiTurn == -1) buttonNumber++;
-        //if (player.chi[Library.idWithoutRed[tileId]] && player.riichiTurn == -1) buttonNumber++;
-        //if (player.kan[Library.idWithoutRed[tileId]] && player.riichiTurn == -1) buttonNumber++;
-        if (playerManager.machiTile[Library.idWithoutRed[tileId]]) buttonNumber++;
+        if (GameManager.instance.playerManager.pon[Library.idWithoutRed[tileId]] && GameManager.instance.playerManager.riichiTurn == -1) buttonNumber++;
+        if (GameManager.instance.playerManager.chi[Library.idWithoutRed[tileId]] && GameManager.instance.playerManager.riichiTurn == -1 && (GameManager.instance.playerManager.id - GameManager.instance.activePlayerId + 4) % 4 == 1) buttonNumber++;
+        if (GameManager.instance.playerManager.kan[Library.idWithoutRed[tileId]] && GameManager.instance.playerManager.riichiTurn == -1) buttonNumber++;
+        if (GameManager.instance.playerManager.machiTile[Library.idWithoutRed[tileId]]) buttonNumber++;
         if (buttonNumber == 1)
         {
             Debug.Log(buttonNumber);
-            return 1;
+            return false;
         }        SkipToOthersOn();
-        if (playerManager.machiTile[Library.idWithoutRed[tileId]]) RonOn();
-        //if (player.kan[Library.idWithoutRed[tileId]] && player.riichiTurn == -1) KanOn();
-        //if (player.chi[Library.idWithoutRed[tileId]] && player.riichiTurn == -1) ChiOn();
-        //if (player.pon[Library.idWithoutRed[tileId]] && player.riichiTurn == -1) PonOn();
-        return 0;
+        if (GameManager.instance.playerManager.machiTile[Library.idWithoutRed[tileId]]) RonOn();
+        if (GameManager.instance.playerManager.kan[Library.idWithoutRed[tileId]] && GameManager.instance.playerManager.riichiTurn == -1) KanOn();
+        if (GameManager.instance.playerManager.chi[Library.idWithoutRed[tileId]] && GameManager.instance.playerManager.riichiTurn == -1 && (GameManager.instance.playerManager.id - GameManager.instance.activePlayerId + 4) % 4 == 1) ChiOn();
+        if (GameManager.instance.playerManager.pon[Library.idWithoutRed[tileId]] && GameManager.instance.playerManager.riichiTurn == -1) PonOn();
+        return true;
     }
 
     public void PonOn() { 

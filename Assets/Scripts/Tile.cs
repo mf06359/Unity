@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Tile : MonoBehaviour
@@ -59,7 +60,7 @@ public class Tile : MonoBehaviour
     {
         if (!canTouch ) return;
         isDragging = false;
-        if (!moved && (GameManager.instance.playerManager.activePlayerId == playerid /* || GameManager.instance.furoNow[playerid] */) && (Time.time - lastMouseDownTime<= 0.2f || Mathf.Abs(startPosition.y - transform.position.y) > 1))
+        if (!moved && (GameManager.instance.activePlayerId == playerid /* || GameManager.instance.furoNow[playerid] */) && (Time.time - lastMouseDownTime<= 0.2f || Mathf.Abs(startPosition.y - transform.position.y) > 1))
         {
             GameManager.instance.playerManager.riverCount++;
             if (kakanTo != Vector3.zero)
@@ -70,7 +71,7 @@ public class Tile : MonoBehaviour
                 canTouch = false;
                 return;
             }
-            if (GameManager.instance.playerManager.id == GameManager.instance.playerManager.activePlayerId && GameManager.instance.playerManager.turnCount == GameManager.instance.playerManager.riichiTurn)
+            if (GameManager.instance.playerManager.id == GameManager.instance.activePlayerId && GameManager.instance.playerManager.turnCount == GameManager.instance.playerManager.riichiTurn)
             {
                 MoveTo(GameManager.instance.playerManager.riverTail + new Vector3(0.12f, 0.12f, 0), true); // true‚Å‰ñ“]‚ğ“K—p
                 if (GameManager.instance.playerManager.riverCount % 6 == 0)
@@ -96,6 +97,7 @@ public class Tile : MonoBehaviour
             }
             moved = true;
             this.transform.localScale = Vector3.one;
+            GameManager.instance.playerManager.panelManager.river[GameManager.instance.playerManager.id].Add(this.transform);
             GameManager.instance.playerManager.OnClickDiscard(this);
             canTouch = false;
         }
@@ -129,7 +131,7 @@ public class Tile : MonoBehaviour
         if (GameManager.instance.playerManager == null) targetRotation = transform.rotation;
         else
         {
-            targetRotation = (rotate && GameManager.instance.playerManager.activePlayerId == GameManager.instance.playerManager.id &&  GameManager.instance.playerManager.turnCount == GameManager.instance.playerManager.riichiTurn) ? Quaternion.Euler(0, 0, 90) : transform.rotation; // ‰ñ“]ˆ—‚ğˆø”‚Å§Œä
+            targetRotation = (rotate && GameManager.instance.activePlayerId == GameManager.instance.playerManager.id &&  GameManager.instance.playerManager.turnCount == GameManager.instance.playerManager.riichiTurn) ? Quaternion.Euler(0, 0, 90) : transform.rotation; // ‰ñ“]ˆ—‚ğˆø”‚Å§Œä
         }
 
         while (elapsed < smoothTime)

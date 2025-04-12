@@ -59,6 +59,7 @@ public class Wall : MonoBehaviour
             int rnd = Random.Range(0, i);
             (wall[i - 1], wall[rnd]) = (wall[rnd], wall[i - 1]);
         }
+        FlipNewDora();
     }
 
     public int FlipNewDora()
